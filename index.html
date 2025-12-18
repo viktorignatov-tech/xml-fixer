@@ -26,7 +26,7 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            z-index: 1000;
+            z-index: 10000;
             display: flex;
             gap: 10px;
         }
@@ -34,16 +34,18 @@
             background: white;
             color: #667eea;
             border: none;
-            padding: 10px 20px;
+            padding: 12px 24px;
             border-radius: 20px;
             font-weight: 600;
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: all 0.3s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .theme-btn:hover, .lang-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        .theme-btn:active, .lang-btn:active {
+            transform: scale(0.95);
         }
         .header {
             text-align: center;
@@ -82,10 +84,12 @@
             cursor: pointer;
             transition: all 0.3s;
             backdrop-filter: blur(10px);
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .tab-btn:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
+        .tab-btn:active {
+            transform: scale(0.95);
         }
         .tab-btn.active {
             background: white;
@@ -165,10 +169,12 @@
             cursor: pointer;
             transition: all 0.3s;
             white-space: nowrap;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .link-input-wrapper button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        .link-input-wrapper button:active {
+            transform: scale(0.95);
         }
         .instructions-box {
             background: rgba(255,255,255,0.15);
@@ -210,11 +216,12 @@
             transition: all 0.3s;
             cursor: pointer;
             margin-top: 20px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
         }
-        .drop-zone:hover, .drop-zone.dragover {
-            border-color: #764ba2;
-            background: #f0f2ff;
-            transform: scale(1.02);
+        .drop-zone:active {
+            transform: scale(0.98);
         }
         body.dark-mode .drop-zone {
             background: #1a1a2e;
@@ -273,10 +280,13 @@
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
             margin-top: 10px;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            user-select: none;
+            width: 100%;
         }
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        .btn-primary:active:not(:disabled) {
+            transform: scale(0.98);
         }
         .btn-primary:disabled {
             background: #ccc;
@@ -356,7 +366,36 @@
             margin-top: 40px;
             opacity: 0.8;
         }
-    </style>
+
+```
+    /* Mobile optimizations */
+    @media (max-width: 768px) {
+        .header h1 {
+            font-size: 2em;
+        }
+        .header p {
+            font-size: 1em;
+        }
+        .link-input-wrapper {
+            flex-direction: column;
+        }
+        .link-input-wrapper button {
+            width: 100%;
+        }
+        .tabs {
+            flex-direction: column;
+        }
+        .tab-btn {
+            width: 100%;
+        }
+        .controls-toggle {
+            top: 10px;
+            right: 10px;
+        }
+    }
+</style>
+```
+
 </head>
 <body>
     <div class="controls-toggle">
@@ -559,14 +598,67 @@
         document.getElementById('themeIcon').textContent = isDarkMode ? '☀️' : '🌙';
     }
 
+    const translations = {
+        en: {
+            mainTitle: '🔧 Modding Toolkit',
+            mainSubtitle: 'Convert GTA5 & LCPDFR mods to FiveM resources',
+            tab0: '🚗 GTA5 → FiveM',
+            tab1: '🚔 LCPDFR → FiveM',
+            tab2: '🔧 XML Fixer',
+            tab3: '🎨 Carvariations Generator',
+            hero0Title: '🚗 GTA5-Mods → FiveM Converter',
+            hero0Text: 'Paste any GTA5-Mods.com vehicle link below',
+            btn0Text: 'Start',
+            inst0Title: '📥 Follow these steps:',
+            label0Vehicle: 'Vehicle Spawn Name:',
+            drop0Text: 'Drag & drop vehicle files here',
+            drop0Hint: 'Or click to browse',
+            hero1Title: '🚔 LCPDFR → FiveM Converter',
+            hero1Text: 'Paste any LCPDFR.com vehicle link below',
+            btn1Text: 'Start',
+            inst1Title: '📥 Follow these steps:',
+            label1Vehicle: 'Vehicle Spawn Name:',
+            drop1Text: 'Drag & drop vehicle files here'
+        },
+        bg: {
+            mainTitle: '🔧 Инструменти за Модиране',
+            mainSubtitle: 'Конвертирайте GTA5 & LCPDFR модове във FiveM ресурси',
+            tab0: '🚗 GTA5 → FiveM',
+            tab1: '🚔 LCPDFR → FiveM',
+            tab2: '🔧 XML Фиксер',
+            tab3: '🎨 Генератор Carvariations',
+            hero0Title: '🚗 GTA5-Mods → FiveM Конвертор',
+            hero0Text: 'Поставете линк от GTA5-Mods.com',
+            btn0Text: 'Старт',
+            inst0Title: '📥 Следвайте стъпките:',
+            label0Vehicle: 'Име за спаун:',
+            drop0Text: 'Плъзнете файлове тук',
+            drop0Hint: 'Или кликнете за избор',
+            hero1Title: '🚔 LCPDFR → FiveM Конвертор',
+            hero1Text: 'Поставете линк от LCPDFR.com',
+            btn1Text: 'Старт',
+            inst1Title: '📥 Следвайте стъпките:',
+            label1Vehicle: 'Име за спаун:',
+            drop1Text: 'Плъзнете файлове тук'
+        }
+    };
+
     function toggleLanguage() {
         currentLang = currentLang === 'en' ? 'bg' : 'en';
         updateLanguage();
     }
 
     function updateLanguage() {
-        // Simplified - add full translations if needed
+        const t = translations[currentLang];
         document.getElementById('langText').textContent = currentLang === 'en' ? 'BG' : 'EN';
+        
+        // Update all text elements
+        Object.keys(t).forEach(key => {
+            const el = document.getElementById(key);
+            if (el) {
+                el.textContent = t[key];
+            }
+        });
     }
 
     function switchTool(index) {
