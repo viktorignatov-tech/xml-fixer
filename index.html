@@ -248,7 +248,7 @@
     <script>
         let fixedContent = '';
         let originalFileName = '';
-        let currentLang = 'bg';
+        let currentLang = 'en';
 
         const translations = {
             bg: {
@@ -407,10 +407,8 @@
             const a = document.createElement('a');
             a.href = url;
             
-            const nameParts = originalFileName.split('.');
-            const ext = nameParts.pop();
-            const baseName = nameParts.join('.');
-            a.download = `${baseName}_fixed.${ext}`;
+            // Keep the original filename
+            a.download = originalFileName;
             
             document.body.appendChild(a);
             a.click();
