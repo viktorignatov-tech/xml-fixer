@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="bg">
+
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>XML Fixer - Fix XML Files</title>
+    <title>Modding Toolkit - GTA5 & FiveM Converter</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -15,14 +17,20 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s;
         }
-        .lang-toggle {
+        body.dark-mode {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .controls-toggle {
             position: fixed;
             top: 20px;
             right: 20px;
             z-index: 1000;
+            display: flex;
+            gap: 10px;
         }
-        .lang-btn {
+        .theme-btn, .lang-btn {
             background: white;
             color: #667eea;
             border: none;
@@ -32,9 +40,8 @@
             cursor: pointer;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             transition: all 0.3s;
-            font-size: 0.9em;
         }
-        .lang-btn:hover {
+        .theme-btn:hover, .lang-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(0,0,0,0.3);
         }
@@ -54,69 +61,207 @@
             opacity: 0.9;
         }
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .tab-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            padding: 15px 30px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+        body.dark-mode .tab-btn {
+            background: rgba(42, 42, 62, 0.8);
+        }
+        body.dark-mode .tab-btn.active {
+            background: white;
+            color: #667eea;
+        }
+        .tool-container {
             background: white;
             border-radius: 16px;
             padding: 40px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: none;
         }
-        .info {
+        body.dark-mode .tool-container {
+            background: #2a2a3e;
+            color: #e0e0e0;
+        }
+        .tool-container.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .hero-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 50px 40px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            text-align: center;
             color: white;
-            padding: 20px;
-            border-radius: 12px;
+        }
+        .hero-section h2 {
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+        .hero-section p {
+            font-size: 1.1em;
+            opacity: 0.95;
             margin-bottom: 30px;
         }
-        .info h2 {
-            margin-bottom: 10px;
+        .link-input-wrapper {
+            display: flex;
+            gap: 10px;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        .link-input-wrapper input {
+            flex: 1;
+            padding: 18px;
+            border: 3px solid white;
+            border-radius: 12px;
+            font-size: 1.1em;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .link-input-wrapper input:focus {
+            transform: scale(1.01);
+            box-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        .link-input-wrapper button {
+            padding: 18px 40px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .link-input-wrapper button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .instructions-box {
+            background: rgba(255,255,255,0.15);
+            padding: 25px;
+            border-radius: 12px;
+            display: none;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        .instructions-box.active {
+            display: block;
+            animation: slideDown 0.4s;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .instructions-box h4 {
+            margin-bottom: 20px;
             font-size: 1.3em;
         }
-        .info p {
-            line-height: 1.6;
+        .instructions-box ol {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 2;
+            font-size: 1.05em;
         }
-        .file-input-wrapper {
-            margin-bottom: 30px;
-        }
-        label {
-            display: block;
+        .instructions-box ol li {
             margin-bottom: 12px;
-            font-weight: 600;
-            color: #333;
-            font-size: 1.1em;
+            padding-left: 10px;
         }
-        .file-input-container {
-            position: relative;
+        .drop-zone {
             border: 3px dashed #667eea;
             border-radius: 12px;
-            padding: 40px 20px;
+            padding: 60px 20px;
             text-align: center;
             background: #f8f9ff;
             transition: all 0.3s;
             cursor: pointer;
+            margin-top: 20px;
         }
-        .file-input-container:hover {
+        .drop-zone:hover, .drop-zone.dragover {
             border-color: #764ba2;
             background: #f0f2ff;
+            transform: scale(1.02);
         }
-        .file-input-container.dragover {
-            border-color: #764ba2;
-            background: #e8ebff;
+        body.dark-mode .drop-zone {
+            background: #1a1a2e;
+            border-color: #667eea;
         }
-        input[type="file"] {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            cursor: pointer;
+        body.dark-mode .drop-zone:hover {
+            background: #252540;
+        }
+        .drop-zone input[type="file"] {
+            display: none;
         }
         .file-icon {
-            font-size: 3em;
+            font-size: 3.5em;
             margin-bottom: 10px;
         }
-        button {
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        body.dark-mode .form-group label {
+            color: #e0e0e0;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border 0.3s;
+        }
+        body.dark-mode .form-group input,
+        body.dark-mode .form-group select,
+        body.dark-mode .form-group textarea {
+            background: #1a1a2e;
+            border-color: #4a4a5e;
+            color: #e0e0e0;
+        }
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
@@ -125,31 +270,20 @@
             font-size: 1.1em;
             font-weight: 600;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            margin-top: 10px;
         }
-        button:hover:not(:disabled) {
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
-        button:disabled {
+        .btn-primary:disabled {
             background: #ccc;
             cursor: not-allowed;
             box-shadow: none;
         }
-        button:active:not(:disabled) {
-            transform: translateY(0);
-        }
-        .success {
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-            display: none;
-            animation: slideIn 0.3s ease-out;
-        }
-        .progress {
+        .progress-container {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             color: white;
             padding: 20px;
@@ -172,20 +306,49 @@
             transition: width 0.3s;
             border-radius: 12px;
         }
-        .stats {
-            margin-top: 12px;
-            font-size: 0.95em;
-            opacity: 0.95;
+        .success-box {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
         }
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .file-list {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        body.dark-mode .file-list {
+            background: #1a1a2e;
+        }
+        .file-item {
+            padding: 8px;
+            background: white;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        body.dark-mode .file-item {
+            background: #2a2a3e;
+            color: #e0e0e0;
+        }
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        body.dark-mode .info-box {
+            background: #1a2332;
+            border-left-color: #667eea;
+            color: #e0e0e0;
         }
         .footer {
             text-align: center;
@@ -196,225 +359,564 @@
     </style>
 </head>
 <body>
-    <div class="lang-toggle">
+    <div class="controls-toggle">
+        <button class="theme-btn" onclick="toggleTheme()">
+            <span id="themeIcon">🌙</span>
+        </button>
         <button class="lang-btn" onclick="toggleLanguage()">
-            <span id="langText">🇬🇧 English</span>
+            <span id="langText">BG</span>
         </button>
     </div>
 
-    <div class="header">
-        <h1 id="mainTitle">🔧 XML Фиксер</h1>
-        <p id="mainSubtitle">Бърза поправка на XML файлове с грешки</p>
+```
+<div class="header">
+    <h1 id="mainTitle">🔧 Modding Toolkit</h1>
+    <p id="mainSubtitle">Convert GTA5 & LCPDFR mods to FiveM resources</p>
+</div>
+
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTool(0)" id="tab0">🚗 GTA5 → FiveM</button>
+        <button class="tab-btn" onclick="switchTool(1)" id="tab1">🚔 LCPDFR → FiveM</button>
+        <button class="tab-btn" onclick="switchTool(2)" id="tab2">🔧 XML Fixer</button>
+        <button class="tab-btn" onclick="switchTool(3)" id="tab3">🎨 Carvariations Generator</button>
     </div>
 
-    <div class="container">
-        <div class="info">
-            <h2 id="infoTitle">Какво прави този инструмент?</h2>
-            <p id="infoText">Автоматично поправя XML грешки като заменя некодирани амперсанди (<code>&amp;</code>) с правилния код <code>&amp;amp;</code>. Работи бързо дори с много големи файлове!</p>
-        </div>
-
-        <div class="file-input-wrapper">
-            <label id="fileLabel">Изберете XML файл:</label>
-            <div class="file-input-container" id="dropZone">
-                <input type="file" id="fileInput" accept=".xml,text/xml" onchange="loadFile(event)">
-                <div class="file-icon">📁</div>
-                <div><strong id="clickText">Кликнете тук</strong> <span id="dragText">или плъзнете файл</span></div>
-                <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;" id="supportText">Поддържа файлове до 100MB+</div>
-            </div>
-        </div>
-
-        <div id="progress" class="progress">
-            <strong id="progressTitle">⏳ Обработка на файла...</strong>
-            <div class="progress-bar">
-                <div id="progressFill" class="progress-fill"></div>
-            </div>
-            <div id="progressText" class="stats"></div>
-        </div>
-
-        <div id="success" class="success">
-            <strong id="successTitle">✓ Готово!</strong>
-            <div id="stats" class="stats"></div>
-        </div>
-
-        <button id="downloadBtn" onclick="downloadXML()" disabled>
-            <span id="downloadText">📥 Изтегли поправения файл</span>
-        </button>
-    </div>
-
-    <div class="footer">
-        <p id="footerText">Безплатен инструмент за поправка на XML файлове</p>
-    </div>
-
-    <script>
-        let fixedContent = '';
-        let originalFileName = '';
-        let currentLang = 'en';
-
-        const translations = {
-            bg: {
-                langBtn: '🇬🇧 English',
-                mainTitle: '🔧 XML Фиксер',
-                mainSubtitle: 'Бърза поправка на XML файлове с грешки',
-                infoTitle: 'Какво прави този инструмент?',
-                infoText: 'Автоматично поправя XML грешки като заменя некодирани амперсанди (&) с правилния код &amp;. Работи бързо дори с много големи файлове!',
-                fileLabel: 'Изберете XML файл:',
-                clickText: 'Кликнете тук',
-                dragText: 'или плъзнете файл',
-                supportText: 'Поддържа файлове до 100MB+',
-                progressTitle: '⏳ Обработка на файла...',
-                progressText: 'Обработка',
-                successTitle: '✓ Готово!',
-                downloadText: '📥 Изтегли поправения файл',
-                footerText: 'Безплатен инструмент за поправка на XML файлове',
-                statsTemplate: 'Файл: {file} | Поправени грешки: {issues} | Размер: {size} KB',
-                errorMsg: 'Грешка',
-                uploadMsg: 'Моля първо качете файл'
-            },
-            en: {
-                langBtn: '🇧🇬 Български',
-                mainTitle: '🔧 XML Fixer',
-                mainSubtitle: 'Fast XML file error correction',
-                infoTitle: 'What does this tool do?',
-                infoText: 'Automatically fixes XML errors by replacing unescaped ampersands (&) with the correct code &amp;. Works fast even with very large files!',
-                fileLabel: 'Select XML file:',
-                clickText: 'Click here',
-                dragText: 'or drag and drop file',
-                supportText: 'Supports files up to 100MB+',
-                progressTitle: '⏳ Processing file...',
-                progressText: 'Processing',
-                successTitle: '✓ Done!',
-                downloadText: '📥 Download Fixed File',
-                footerText: 'Free XML file fixing tool',
-                statsTemplate: 'File: {file} | Fixed issues: {issues} | Size: {size} KB',
-                errorMsg: 'Error',
-                uploadMsg: 'Please upload a file first'
-            }
-        };
-
-        function toggleLanguage() {
-            currentLang = currentLang === 'bg' ? 'en' : 'bg';
-            updateLanguage();
-        }
-
-        function updateLanguage() {
-            const t = translations[currentLang];
-            document.getElementById('langText').textContent = t.langBtn;
-            document.getElementById('mainTitle').textContent = t.mainTitle;
-            document.getElementById('mainSubtitle').textContent = t.mainSubtitle;
-            document.getElementById('infoTitle').textContent = t.infoTitle;
-            document.getElementById('infoText').innerHTML = t.infoText;
-            document.getElementById('fileLabel').textContent = t.fileLabel;
-            document.getElementById('clickText').textContent = t.clickText;
-            document.getElementById('dragText').textContent = t.dragText;
-            document.getElementById('supportText').textContent = t.supportText;
-            document.getElementById('progressTitle').textContent = t.progressTitle;
-            document.getElementById('successTitle').textContent = t.successTitle;
-            document.getElementById('downloadText').textContent = t.downloadText;
-            document.getElementById('footerText').textContent = t.footerText;
-            document.documentElement.lang = currentLang;
-        }
-
-        // Drag and drop support
-        const dropZone = document.getElementById('dropZone');
-        
-        dropZone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            dropZone.classList.add('dragover');
-        });
-        
-        dropZone.addEventListener('dragleave', () => {
-            dropZone.classList.remove('dragover');
-        });
-        
-        dropZone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            dropZone.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                document.getElementById('fileInput').files = e.dataTransfer.files;
-                loadFile({ target: { files: [file] } });
-            }
-        });
-
-        async function loadFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            originalFileName = file.name;
-            const progressDiv = document.getElementById('progress');
-            const successDiv = document.getElementById('success');
-            const downloadBtn = document.getElementById('downloadBtn');
-            const progressFill = document.getElementById('progressFill');
-            const progressText = document.getElementById('progressText');
-            const t = translations[currentLang];
-
-            progressDiv.style.display = 'block';
-            successDiv.style.display = 'none';
-            downloadBtn.disabled = true;
-            progressFill.style.width = '0%';
-
-            try {
-                const chunkSize = 1024 * 1024; // 1MB
-                const chunks = Math.ceil(file.size / chunkSize);
-                let result = '';
-                let issuesFixed = 0;
-
-                for (let i = 0; i < chunks; i++) {
-                    const start = i * chunkSize;
-                    const end = Math.min(start + chunkSize, file.size);
-                    const chunk = file.slice(start, end);
-                    
-                    const text = await chunk.text();
-                    const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
-                    
-                    issuesFixed += (text.match(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g) || []).length;
-                    result += fixed;
-                    
-                    const progress = ((i + 1) / chunks * 100).toFixed(0);
-                    progressFill.style.width = progress + '%';
-                    progressText.textContent = `${t.progressText}: ${progress}%`;
-                    
-                    await new Promise(resolve => setTimeout(resolve, 0));
-                }
-
-                fixedContent = result;
-                
-                progressDiv.style.display = 'none';
-                successDiv.style.display = 'block';
-                downloadBtn.disabled = false;
-                
-                const statsText = t.statsTemplate
-                    .replace('{file}', file.name)
-                    .replace('{issues}', issuesFixed)
-                    .replace('{size}', (file.size / 1024).toFixed(1));
-                
-                document.getElementById('stats').textContent = statsText;
-                    
-            } catch (error) {
-                progressDiv.style.display = 'none';
-                alert(`${translations[currentLang].errorMsg}: ${error.message}`);
-            }
-        }
-
-        function downloadXML() {
-            if (!fixedContent) {
-                alert(translations[currentLang].uploadMsg);
-                return;
-            }
+    <!-- Tool 1: GTA5 to FiveM -->
+    <div class="tool-container active" id="tool0">
+        <div class="hero-section">
+            <h2 id="hero0Title">🚗 GTA5-Mods → FiveM Converter</h2>
+            <p id="hero0Text">Paste any GTA5-Mods.com vehicle link below</p>
             
-            const blob = new Blob([fixedContent], { type: 'text/xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
+            <div class="link-input-wrapper">
+                <input type="url" id="gta5Link" placeholder="https://www.gta5-mods.com/vehicles/..." />
+                <button onclick="processGTA5Link()">
+                    <span id="btn0Text">Start</span>
+                </button>
+            </div>
+
+            <div class="instructions-box" id="instructions0">
+                <h4 id="inst0Title">📥 Follow these steps:</h4>
+                <ol id="inst0List">
+                    <li>Download page opened in new tab → Download the mod</li>
+                    <li>Extract the downloaded ZIP file</li>
+                    <li>Drag the extracted files to the box below</li>
+                    <li>Click Convert → Get FiveM-ready resource!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id="label0Vehicle">Vehicle Spawn Name:</label>
+            <input type="text" id="spawnName0" placeholder="police2" />
+        </div>
+
+        <div class="drop-zone" id="dropZone0" onclick="document.getElementById('fileInput0').click()">
+            <input type="file" id="fileInput0" multiple accept=".ytd,.yft,.ytf,.meta,.xml,.ydr,.ydd" onchange="handleGTA5Files(event)">
+            <div class="file-icon">📂</div>
+            <div><strong id="drop0Text">Drag & drop vehicle files here</strong></div>
+            <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;" id="drop0Hint">Or click to browse</div>
+        </div>
+
+        <div class="file-list" id="fileList0" style="display: none;"></div>
+
+        <div class="progress-container" id="progress0">
+            <strong id="progress0Title">⏳ Converting...</strong>
+            <div class="progress-bar"><div id="progressFill0" class="progress-fill"></div></div>
+        </div>
+
+        <div class="success-box" id="success0">
+            <strong>✓ Conversion Complete!</strong>
+            <div id="stats0" style="margin-top: 10px;"></div>
+        </div>
+
+        <button class="btn-primary" id="convertBtn0" onclick="convertGTA5()" disabled>🔄 Convert to FiveM</button>
+    </div>
+
+    <!-- Tool 2: LCPDFR to FiveM -->
+    <div class="tool-container" id="tool1">
+        <div class="hero-section">
+            <h2 id="hero1Title">🚔 LCPDFR → FiveM Converter</h2>
+            <p id="hero1Text">Paste any LCPDFR.com vehicle link below</p>
+            
+            <div class="link-input-wrapper">
+                <input type="url" id="lcpdfrLink" placeholder="https://www.lcpdfr.com/downloads/gta5mods/..." />
+                <button onclick="processLCPDFRLink()">
+                    <span id="btn1Text">Start</span>
+                </button>
+            </div>
+
+            <div class="instructions-box" id="instructions1">
+                <h4 id="inst1Title">📥 Follow these steps:</h4>
+                <ol id="inst1List">
+                    <li>Download page opened in new tab → Download the mod</li>
+                    <li>Extract the downloaded ZIP file</li>
+                    <li>Drag the extracted files to the box below</li>
+                    <li>Click Convert → Get FiveM-ready resource!</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label id="label1Vehicle">Vehicle Spawn Name:</label>
+            <input type="text" id="spawnName1" placeholder="police" />
+        </div>
+
+        <div class="drop-zone" id="dropZone1" onclick="document.getElementById('fileInput1').click()">
+            <input type="file" id="fileInput1" multiple accept=".ytd,.yft,.ytf,.meta,.xml" onchange="handleLCPDFRFiles(event)">
+            <div class="file-icon">🚔</div>
+            <div><strong id="drop1Text">Drag & drop vehicle files here</strong></div>
+            <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">Or click to browse</div>
+        </div>
+
+        <div class="file-list" id="fileList1" style="display: none;"></div>
+
+        <div class="progress-container" id="progress1">
+            <strong id="progress1Title">⏳ Converting...</strong>
+            <div class="progress-bar"><div id="progressFill1" class="progress-fill"></div></div>
+        </div>
+
+        <div class="success-box" id="success1">
+            <strong>✓ Conversion Complete!</strong>
+            <div id="stats1" style="margin-top: 10px;"></div>
+        </div>
+
+        <button class="btn-primary" id="convertBtn1" onclick="convertLCPDFR()" disabled>🔄 Convert to FiveM</button>
+    </div>
+
+    <!-- Tool 3: XML Fixer -->
+    <div class="tool-container" id="tool2">
+        <div class="info-box">
+            <h2>🔧 XML Fixer</h2>
+            <p>Automatically fixes unescaped ampersands (&) in XML files. Fast processing for large files!</p>
+        </div>
+        <div class="drop-zone" id="dropZone2" onclick="document.getElementById('fileInput2').click()">
+            <input type="file" id="fileInput2" accept=".xml,text/xml" onchange="handleXMLFix(event)">
+            <div class="file-icon">📁</div>
+            <div><strong>Drag & drop XML file here</strong></div>
+        </div>
+        <div class="progress-container" id="progress2">
+            <strong>⏳ Processing...</strong>
+            <div class="progress-bar"><div id="progressFill2" class="progress-fill"></div></div>
+        </div>
+        <div class="success-box" id="success2">
+            <strong>✓ Done!</strong>
+            <div id="stats2" style="margin-top: 10px;"></div>
+        </div>
+        <button class="btn-primary" id="downloadBtn2" onclick="downloadFixedXML()" disabled>📥 Download Fixed File</button>
+    </div>
+
+    <!-- Tool 4: Carvariations Generator -->
+    <div class="tool-container" id="tool3">
+        <div class="info-box">
+            <h2>🎨 Carvariations.meta Generator</h2>
+            <p>Generate carvariations.meta files for police vehicles with custom colors, sirens, and extras.</p>
+        </div>
+        <div class="form-group">
+            <label>Vehicle Model Name:</label>
+            <input type="text" id="modelName" placeholder="police2" />
+        </div>
+        <div class="form-group">
+            <label>Primary Colors (comma separated):</label>
+            <input type="text" id="primaryColors" placeholder="0,1,3,4" value="0,1,111" />
+        </div>
+        <div class="form-group">
+            <label>Secondary Colors (comma separated):</label>
+            <input type="text" id="secondaryColors" placeholder="0,1,3,4" value="0,1,111" />
+        </div>
+        <div class="form-group">
+            <label>Siren Setting:</label>
+            <select id="sirenSetting">
+                <option value="1">1 - Default</option>
+                <option value="2">2 - Fire Truck</option>
+                <option value="3">3 - Ambulance</option>
+                <option value="4">4 - Police</option>
+            </select>
+        </div>
+        <div class="success-box" id="success3">
+            <strong>✓ Generated!</strong>
+        </div>
+        <button class="btn-primary" onclick="generateCarvariations()">📝 Generate & Download</button>
+    </div>
+</div>
+
+<div class="footer">
+    <p>Free modding tools for the community • Made with ❤️</p>
+</div>
+
+<script>
+    let currentLang = 'en';
+    let currentTool = 0;
+    let isDarkMode = false;
+    let gta5Files = [];
+    let lcpdfrFiles = [];
+    let xmlFixedContent = '';
+    let xmlOriginalName = '';
+
+    function toggleTheme() {
+        isDarkMode = !isDarkMode;
+        document.body.classList.toggle('dark-mode');
+        document.getElementById('themeIcon').textContent = isDarkMode ? '☀️' : '🌙';
+    }
+
+    function toggleLanguage() {
+        currentLang = currentLang === 'en' ? 'bg' : 'en';
+        updateLanguage();
+    }
+
+    function updateLanguage() {
+        // Simplified - add full translations if needed
+        document.getElementById('langText').textContent = currentLang === 'en' ? 'BG' : 'EN';
+    }
+
+    function switchTool(index) {
+        currentTool = index;
+        document.querySelectorAll('.tool-container').forEach((el, i) => {
+            el.classList.toggle('active', i === index);
+        });
+        document.querySelectorAll('.tab-btn').forEach((el, i) => {
+            el.classList.toggle('active', i === index);
+        });
+    }
+
+    function processGTA5Link() {
+        const link = document.getElementById('gta5Link').value.trim();
+        if (!link) {
+            alert('Please paste a GTA5-Mods.com link!');
+            return;
+        }
+
+        if (!link.includes('gta5-mods.com') && !link.includes('gta5mods.com')) {
+            alert('Please enter a valid GTA5-Mods.com link!');
+            return;
+        }
+
+        // Extract vehicle name
+        const urlParts = link.split('/');
+        let modName = urlParts[urlParts.length - 1] || 'vehicle';
+        modName = modName.replace(/[^a-z0-9]/gi, '').toLowerCase();
+        document.getElementById('spawnName0').value = modName;
+
+        // Show instructions
+        document.getElementById('instructions0').classList.add('active');
+
+        // Open download page
+        window.open(link, '_blank');
+    }
+
+    function processLCPDFRLink() {
+        const link = document.getElementById('lcpdfrLink').value.trim();
+        if (!link) {
+            alert('Please paste an LCPDFR.com link!');
+            return;
+        }
+
+        if (!link.includes('lcpdfr.com')) {
+            alert('Please enter a valid LCPDFR.com link!');
+            return;
+        }
+
+        const urlParts = link.split('/');
+        let modName = urlParts[urlParts.length - 1] || 'police';
+        modName = modName.replace(/[^a-z0-9]/gi, '').toLowerCase();
+        document.getElementById('spawnName1').value = modName;
+
+        document.getElementById('instructions1').classList.add('active');
+        window.open(link, '_blank');
+    }
+
+    function handleGTA5Files(event) {
+        gta5Files = Array.from(event.target.files);
+        if (gta5Files.length === 0) return;
+
+        const list = document.getElementById('fileList0');
+        list.style.display = 'block';
+        list.innerHTML = '<strong>📁 Uploaded Files:</strong><br>' + 
+            gta5Files.map(f => `<div class="file-item">📄 ${f.name}</div>`).join('');
+        
+        document.getElementById('convertBtn0').disabled = false;
+    }
+
+    function handleLCPDFRFiles(event) {
+        lcpdfrFiles = Array.from(event.target.files);
+        if (lcpdfrFiles.length === 0) return;
+
+        const list = document.getElementById('fileList1');
+        list.style.display = 'block';
+        list.innerHTML = '<strong>📁 Uploaded Files:</strong><br>' + 
+            lcpdfrFiles.map(f => `<div class="file-item">📄 ${f.name}</div>`).join('');
+        
+        document.getElementById('convertBtn1').disabled = false;
+    }
+
+    async function convertGTA5() {
+        const spawnName = document.getElementById('spawnName0').value.trim();
+        if (!spawnName) {
+            alert('Please enter a vehicle spawn name!');
+            return;
+        }
+
+        document.getElementById('progress0').style.display = 'block';
+        document.getElementById('success0').style.display = 'none';
+        document.getElementById('progressFill0').style.width = '50%';
+
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder(spawnName);
+            
+            for (const file of gta5Files) {
+                const data = await file.arrayBuffer();
+                
+                if (file.name.endsWith('.meta') || file.name.endsWith('.xml')) {
+                    const text = await file.text();
+                    const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+                    folder.file(file.name, fixed);
+                } else {
+                    folder.file(file.name, data);
+                }
+            }
+
+            const fxmanifest = `fx_version 'cerulean'
+```
+
+game ‘gta5’
+
+author ‘Converted via Modding Toolkit’
+description ‘${spawnName}’
+version ‘1.0.0’
+
+files {
+${gta5Files.filter(f => f.name.endsWith(’.meta’)).map(f => `    '${f.name}',`).join(’\n’)}
+}
+
+${gta5Files.some(f => f.name.includes(‘carcols’)) ? “data_file ‘CARCOLS_FILE’ ‘carcols.meta’” : ‘’}
+${gta5Files.some(f => f.name.includes(‘carvariations’)) ? “data_file ‘VEHICLE_VARIATION_FILE’ ‘carvariations.meta’” : ‘’}
+${gta5Files.some(f => f.name.includes(‘handling’)) ? “data_file ‘HANDLING_FILE’ ‘handling.meta’” : ‘’}
+${gta5Files.some(f => f.name.includes(‘vehicles’)) ? “data_file ‘VEHICLE_LAYOUTS_FILE’ ‘vehiclelayouts.meta’” : ‘’}
+
+client_script ‘vehicle_names.lua’
+`;
+folder.file(‘fxmanifest.lua’, fxmanifest);
+
+```
+            const vehicleNames = `Citizen.CreateThread(function()
+AddTextEntry('${spawnName.toUpperCase()}', '${spawnName.charAt(0).toUpperCase() + spawnName.slice(1)}')
+```
+
+end)
+`;
+folder.file(‘vehicle_names.lua’, vehicleNames);
+
+```
+            document.getElementById('progressFill0').style.width = '100%';
+
+            const content = await zip.generateAsync({type: 'blob'});
+            const url = URL.createObjectURL(content);
             const a = document.createElement('a');
             a.href = url;
-            
-            // Keep the original filename
-            a.download = originalFileName;
-            
-            document.body.appendChild(a);
+            a.download = `${spawnName}_fivem.zip`;
             a.click();
-            document.body.removeChild(a);
             URL.revokeObjectURL(url);
+
+            document.getElementById('progress0').style.display = 'none';
+            document.getElementById('success0').style.display = 'block';
+            document.getElementById('stats0').textContent = `Successfully converted ${gta5Files.length} files!`;
+        } catch (error) {
+            alert('Error: ' + error.message);
+            document.getElementById('progress0').style.display = 'none';
         }
-    </script>
+    }
+
+    async function convertLCPDFR() {
+        const spawnName = document.getElementById('spawnName1').value.trim();
+        if (!spawnName) {
+            alert('Please enter a vehicle spawn name!');
+            return;
+        }
+
+        document.getElementById('progress1').style.display = 'block';
+        document.getElementById('success1').style.display = 'none';
+        document.getElementById('progressFill1').style.width = '50%';
+
+        try {
+            const zip = new JSZip();
+            const folder = zip.folder(spawnName);
+            
+            for (const file of lcpdfrFiles) {
+                const data = await file.arrayBuffer();
+                
+                if (file.name.endsWith('.meta') || file.name.endsWith('.xml')) {
+                    const text = await file.text();
+                    const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+                    folder.file(file.name, fixed);
+                } else {
+                    folder.file(file.name, data);
+                }
+            }
+
+            const fxmanifest = `fx_version 'cerulean'
+```
+
+game ‘gta5’
+
+author ‘Converted from LCPDFR’
+description ‘${spawnName} - Police Vehicle’
+version ‘1.0.0’
+
+files {
+${lcpdfrFiles.filter(f => f.name.endsWith(’.meta’)).map(f => `    '${f.name}',`).join(’\n’)}
+}
+
+data_file ‘CARCOLS_FILE’ ‘carcols.meta’
+data_file ‘VEHICLE_VARIATION_FILE’ ‘carvariations.meta’
+data_file ‘HANDLING_FILE’ ‘handling.meta’
+
+client_script ‘vehicle_names.lua’
+`;
+folder.file(‘fxmanifest.lua’, fxmanifest);
+
+```
+            const vehicleNames = `Citizen.CreateThread(function()
+AddTextEntry('${spawnName.toUpperCase()}', '${spawnName.charAt(0).toUpperCase() + spawnName.slice(1)}')
+```
+
+end)
+`;
+folder.file(‘vehicle_names.lua’, vehicleNames);
+
+```
+            document.getElementById('progressFill1').style.width = '100%';
+
+            const content = await zip.generateAsync({type: 'blob'});
+            const url = URL.createObjectURL(content);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${spawnName}_fivem.zip`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            document.getElementById('progress1').style.display = 'none';
+            document.getElementById('success1').style.display = 'block';
+            document.getElementById('stats1').textContent = `Successfully converted ${lcpdfrFiles.length} files!`;
+        } catch (error) {
+            alert('Error: ' + error.message);
+            document.getElementById('progress1').style.display = 'none';
+        }
+    }
+
+    async function handleXMLFix(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        xmlOriginalName = file.name;
+        document.getElementById('progress2').style.display = 'block';
+        document.getElementById('success2').style.display = 'none';
+
+        try {
+            const text = await file.text();
+            const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+            const issuesFixed = (text.match(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g) || []).length;
+            
+            xmlFixedContent = fixed;
+            
+            document.getElementById('progress2').style.display = 'none';
+            document.getElementById('success2').style.display = 'block';
+            document.getElementById('stats2').textContent = `Fixed: ${issuesFixed} issues | Size: ${(file.size / 1024).toFixed(1)} KB`;
+            document.getElementById('downloadBtn2').disabled = false;
+        } catch (error) {
+            alert('Error: ' + error.message);
+            document.getElementById('progress2').style.display = 'none';
+        }
+    }
+
+    function downloadFixedXML() {
+        const blob = new Blob([xmlFixedContent], { type: 'text/xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = xmlOriginalName;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    function generateCarvariations() {
+        const modelName = document.getElementById('modelName').value.trim();
+        if (!modelName) {
+            alert('Please enter a vehicle model name!');
+            return;
+        }
+
+        const primaryColors = document.getElementById('primaryColors').value.trim();
+        const secondaryColors = document.getElementById('secondaryColors').value.trim();
+        const sirenSetting = document.getElementById('sirenSetting').value;
+
+        const carvariations = `<?xml version="1.0" encoding="UTF-8"?>
+```
+
+<CVehicleModelInfoVarGlobal>
+  <VariationData>
+    <Item>
+      <modelName>${modelName}</modelName>
+      <colors>
+${primaryColors.split(',').map(c => `        <Item>
+          <indices content="char_array">${c.trim()}</indices>
+        </Item>`).join('\n')}
+      </colors>
+      <kits>
+        <Item>0</Item>
+      </kits>
+      <windowsWithExposedEdge />
+      <plateProbabilities>
+        <Probabilities>
+          <Item>
+            <n>standard_white</n>
+            <Value value="100" />
+          </Item>
+        </Probabilities>
+      </plateProbabilities>
+      <lightSettings>
+        <Item value="${sirenSetting}" />
+      </lightSettings>
+      <sirenSettings>
+        <Item value="${sirenSetting}" />
+      </sirenSettings>
+    </Item>
+  </VariationData>
+</CVehicleModelInfoVarGlobal>`;
+
+```
+        const blob = new Blob([carvariations], { type: 'text/xml;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'carvariations.meta';
+        a.click();
+        URL.revokeObjectURL(url);
+
+        document.getElementById('success3').style.display = 'block';
+        setTimeout(() => {
+            document.getElementById('success3').style.display = 'none';
+        }, 3000);
+    }
+
+    // Drag and drop
+    ['dropZone0', 'dropZone1', 'dropZone2'].forEach(id => {
+        const zone = document.getElementById(id);
+        zone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            zone.classList.add('dragover');
+        });
+        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+        zone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            zone.classList.remove('dragover');
+            const input = zone.querySelector('input[type="file"]');
+            input.files = e.dataTransfer.files;
+            input.dispatchEvent(new Event('change'));
+        });
+    });
+</script>
+```
+
 </body>
 </html>
