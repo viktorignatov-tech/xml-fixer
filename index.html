@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XML Fixer - Fix XML Files</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .lang-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+        .lang-btn {
+            background: white;
+            color: #667eea;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            font-size: 0.9em;
+        }
+        .lang-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding-top: 40px;
+        }
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .info {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        .info h2 {
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+        .info p {
+            line-height: 1.6;
+        }
+        .file-input-wrapper {
+            margin-bottom: 30px;
+        }
+        label {
+            display: block;
+            margin-bottom: 12px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        .file-input-container {
+            position: relative;
+            border: 3px dashed #667eea;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        .file-input-container:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+        .file-input-container.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+        }
+        input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+        .success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        .progress {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 24px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 12px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: white;
+            width: 0%;
+            transition: width 0.3s;
+            border-radius: 12px;
+        }
+        .stats {
+            margin-top: 12px;
+            font-size: 0.95em;
+            opacity: 0.95;
+        }
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .footer {
+            text-align: center;
+            color: white;
+            margin-top: 40px;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="lang-toggle">
+        <button class="lang-btn" onclick="toggleLanguage()">
+            <span id="langText">🇬🇧 English</span>
+        </button>
+    </div>
+
+    <div class="header">
+        <h1 id="mainTitle">🔧 XML Фиксер</h1>
+        <p id="mainSubtitle">Бърза поправка на XML файлове с грешки</p>
+    </div>
+
+    <div class="container">
+        <div class="info">
+            <h2 id="infoTitle">Какво прави този инструмент?</h2>
+            <p id="infoText">Автоматично поправя XML грешки като заменя некодирани амперсанди (<code>&amp;</code>) с правилния код <code>&amp;amp;</code>. Работи бързо дори с много големи файлове!</p>
+        </div>
+
+        <div class="file-input-wrapper">
+            <label id="fileLabel">Изберете XML файл:</label>
+            <div class="file-input-container" id="dropZone">
+                <input type="file" id="fileInput" accept=".xml,text/xml" onchange="loadFile(event)">
+                <div class="file-icon">📁</div>
+                <div><strong id="clickText">Кликнете тук</strong> <span id="dragText">или плъзнете файл</span></div>
+                <div style="margin-top: 10px; font-size: 0.9em; opacity: 0.7;" id="supportText">Поддържа файлове до 100MB+</div>
+            </div>
+        </div>
+
+        <div id="progress" class="progress">
+            <strong id="progressTitle">⏳ Обработка на файла...</strong>
+            <div class="progress-bar">
+                <div id="progressFill" class="progress-fill"></div>
+            </div>
+            <div id="progressText" class="stats"></div>
+        </div>
+
+        <div id="success" class="success">
+            <strong id="successTitle">✓ Готово!</strong>
+            <div id="stats" class="stats"></div>
+        </div>
+
+        <button id="downloadBtn" onclick="downloadXML()" disabled>
+            <span id="downloadText">📥 Изтегли поправения файл</span>
+        </button>
+    </div>
+
+    <div class="footer">
+        <p id="footerText">Безплатен инструмент за поправка на XML файлове</p>
+    </div>
+
+    <script>
+        let fixedContent = '';
+        let originalFileName = '';
+        let currentLang = 'bg';
+
+        const translations = {
+            bg: {
+                langBtn: '🇬🇧 English',
+                mainTitle: '🔧 XML Фиксер',
+                mainSubtitle: 'Бърза поправка на XML файлове с грешки',
+                infoTitle: 'Какво прави този инструмент?',
+                infoText: 'Автоматично поправя XML грешки като заменя некодирани амперсанди (&) с правилния код &amp;. Работи бързо дори с много големи файлове!',
+                fileLabel: 'Изберете XML файл:',
+                clickText: 'Кликнете тук',
+                dragText: 'или плъзнете файл',
+                supportText: 'Поддържа файлове до 100MB+',
+                progressTitle: '⏳ Обработка на файла...',
+                progressText: 'Обработка',
+                successTitle: '✓ Готово!',
+                downloadText: '📥 Изтегли поправения файл',
+                footerText: 'Безплатен инструмент за поправка на XML файлове',
+                statsTemplate: 'Файл: {file} | Поправени грешки: {issues} | Размер: {size} KB',
+                errorMsg: 'Грешка',
+                uploadMsg: 'Моля първо качете файл'
+            },
+            en: {
+                langBtn: '🇧🇬 Български',
+                mainTitle: '🔧 XML Fixer',
+                mainSubtitle: 'Fast XML file error correction',
+                infoTitle: 'What does this tool do?',
+                infoText: 'Automatically fixes XML errors by replacing unescaped ampersands (&) with the correct code &amp;. Works fast even with very large files!',
+                fileLabel: 'Select XML file:',
+                clickText: 'Click here',
+                dragText: 'or drag and drop file',
+                supportText: 'Supports files up to 100MB+',
+                progressTitle: '⏳ Processing file...',
+                progressText: 'Processing',
+                successTitle: '✓ Done!',
+                downloadText: '📥 Download Fixed File',
+                footerText: 'Free XML file fixing tool',
+                statsTemplate: 'File: {file} | Fixed issues: {issues} | Size: {size} KB',
+                errorMsg: 'Error',
+                uploadMsg: 'Please upload a file first'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'bg' ? 'en' : 'bg';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLang];
+            document.getElementById('langText').textContent = t.langBtn;
+            document.getElementById('mainTitle').textContent = t.mainTitle;
+            document.getElementById('mainSubtitle').textContent = t.mainSubtitle;
+            document.getElementById('infoTitle').textContent = t.infoTitle;
+            document.getElementById('infoText').innerHTML = t.infoText;
+            document.getElementById('fileLabel').textContent = t.fileLabel;
+            document.getElementById('clickText').textContent = t.clickText;
+            document.getElementById('dragText').textContent = t.dragText;
+            document.getElementById('supportText').textContent = t.supportText;
+            document.getElementById('progressTitle').textContent = t.progressTitle;
+            document.getElementById('successTitle').textContent = t.successTitle;
+            document.getElementById('downloadText').textContent = t.downloadText;
+            document.getElementById('footerText').textContent = t.footerText;
+            document.documentElement.lang = currentLang;
+        }
+
+        // Drag and drop support
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                document.getElementById('fileInput').files = e.dataTransfer.files;
+                loadFile({ target: { files: [file] } });
+            }
+        });
+
+        async function loadFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            originalFileName = file.name;
+            const progressDiv = document.getElementById('progress');
+            const successDiv = document.getElementById('success');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const t = translations[currentLang];
+
+            progressDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+            downloadBtn.disabled = true;
+            progressFill.style.width = '0%';
+
+            try {
+                const chunkSize = 1024 * 1024; // 1MB
+                const chunks = Math.ceil(file.size / chunkSize);
+                let result = '';
+                let issuesFixed = 0;
+
+                for (let i = 0; i < chunks; i++) {
+                    const start = i * chunkSize;
+                    const end = Math.min(start + chunkSize, file.size);
+                    const chunk = file.slice(start, end);
+                    
+                    const text = await chunk.text();
+                    const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+                    
+                    issuesFixed += (text.match(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g) || []).length;
+                    result += fixed;
+                    
+                    const progress = ((i + 1) / chunks * 100).toFixed(0);
+                    progressFill.style.width = progress + '%';
+                    progressText.textContent = `${t.progressText}: ${progress}%`;
+                    
+                    await new Promise(resolve => setTimeout(resolve, 0));
+                }
+
+                fixedContent = result;
+                
+                progressDiv.style.display = 'none';
+                successDiv.style.display = 'block';
+                downloadBtn.disabled = false;
+                
+                const statsText = t.statsTemplate
+                    .replace('{file}', file.name)
+                    .replace('{issues}', issuesFixed)
+                    .replace('{size}', (file.size / 1024).toFixed(1));
+                
+                document.getElementById('stats').textContent = statsText;
+                    
+            } catch (error) {
+                progressDiv.style.display = 'none';
+                alert(`${translations[currentLang].errorMsg}: ${error.message}`);
+            }
+        }
+
+        function downloadXML() {
+            if (!fixedContent) {
+                alert(translations[currentLang].uploadMsg);
+                return;
+            }
+            
+            const blob = new Blob([fixedContent], { type: 'text/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            const nameParts = originalFileName.split('.');
+            const ext = nameParts.pop();
+            const baseName = nameParts.join('.');
+            a.download = `${baseName}_fixed.${ext}`;
+            
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
