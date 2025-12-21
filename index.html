@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -366,36 +365,31 @@
             margin-top: 40px;
             opacity: 0.8;
         }
-
-```
-    /* Mobile optimizations */
-    @media (max-width: 768px) {
-        .header h1 {
-            font-size: 2em;
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            .header p {
+                font-size: 1em;
+            }
+            .link-input-wrapper {
+                flex-direction: column;
+            }
+            .link-input-wrapper button {
+                width: 100%;
+            }
+            .tabs {
+                flex-direction: column;
+            }
+            .tab-btn {
+                width: 100%;
+            }
+            .controls-toggle {
+                top: 10px;
+                right: 10px;
+            }
         }
-        .header p {
-            font-size: 1em;
-        }
-        .link-input-wrapper {
-            flex-direction: column;
-        }
-        .link-input-wrapper button {
-            width: 100%;
-        }
-        .tabs {
-            flex-direction: column;
-        }
-        .tab-btn {
-            width: 100%;
-        }
-        .controls-toggle {
-            top: 10px;
-            right: 10px;
-        }
-    }
-</style>
-```
-
+    </style>
 </head>
 <body>
     <div class="controls-toggle">
@@ -407,544 +401,520 @@
         </button>
     </div>
 
-```
-<div class="header">
-    <h1 id="mainTitle">🔧 Modding Toolkit</h1>
-    <p id="mainSubtitle">Convert GTA5 & LCPDFR mods to FiveM resources</p>
-</div>
-
-<div class="container">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="switchTool(0)" id="tab0">🚗 GTA5 → FiveM</button>
-        <button class="tab-btn" onclick="switchTool(1)" id="tab1">🚔 LCPDFR → FiveM</button>
-        <button class="tab-btn" onclick="switchTool(2)" id="tab2">🔧 XML Fixer</button>
-        <button class="tab-btn" onclick="switchTool(3)" id="tab3">🎨 Carvariations Generator</button>
+    <div class="header">
+        <h1 id="mainTitle">🔧 Modding Toolkit</h1>
+        <p id="mainSubtitle">Convert GTA5 & LCPDFR mods to FiveM resources</p>
     </div>
 
-    <!-- Tool 1: GTA5 to FiveM -->
-    <div class="tool-container active" id="tool0">
-        <div class="hero-section">
-            <h2 id="hero0Title">🚗 GTA5-Mods → FiveM Converter</h2>
-            <p id="hero0Text">Paste any GTA5-Mods.com vehicle link below</p>
-            
-            <div class="link-input-wrapper">
-                <input type="url" id="gta5Link" placeholder="https://www.gta5-mods.com/vehicles/..." />
-                <button onclick="processGTA5Link()">
-                    <span id="btn0Text">Start</span>
-                </button>
-            </div>
-
-            <div class="instructions-box" id="instructions0">
-                <h4 id="inst0Title">📥 Follow these steps:</h4>
-                <ol id="inst0List">
-                    <li>Download page opened in new tab → Download the mod</li>
-                    <li>Extract the downloaded ZIP file</li>
-                    <li>Drag the extracted files to the box below</li>
-                    <li>Click Convert → Get FiveM-ready resource!</li>
-                </ol>
-            </div>
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTool(0)" id="tab0">🚗 GTA5 → FiveM</button>
+            <button class="tab-btn" onclick="switchTool(1)" id="tab1">🚔 LCPDFR → FiveM</button>
+            <button class="tab-btn" onclick="switchTool(2)" id="tab2">🔧 XML Fixer</button>
+            <button class="tab-btn" onclick="switchTool(3)" id="tab3">🎨 Carvariations Generator</button>
         </div>
 
-        <div class="form-group">
-            <label id="label0Vehicle">Vehicle Spawn Name:</label>
-            <input type="text" id="spawnName0" placeholder="police2" />
-        </div>
-
-        <div class="drop-zone" id="dropZone0" onclick="document.getElementById('fileInput0').click()">
-            <input type="file" id="fileInput0" multiple accept=".ytd,.yft,.ytf,.meta,.xml,.ydr,.ydd" onchange="handleGTA5Files(event)">
-            <div class="file-icon">📂</div>
-            <div><strong id="drop0Text">Drag & drop vehicle files here</strong></div>
-            <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;" id="drop0Hint">Or click to browse</div>
-        </div>
-
-        <div class="file-list" id="fileList0" style="display: none;"></div>
-
-        <div class="progress-container" id="progress0">
-            <strong id="progress0Title">⏳ Converting...</strong>
-            <div class="progress-bar"><div id="progressFill0" class="progress-fill"></div></div>
-        </div>
-
-        <div class="success-box" id="success0">
-            <strong>✓ Conversion Complete!</strong>
-            <div id="stats0" style="margin-top: 10px;"></div>
-        </div>
-
-        <button class="btn-primary" id="convertBtn0" onclick="convertGTA5()" disabled>🔄 Convert to FiveM</button>
-    </div>
-
-    <!-- Tool 2: LCPDFR to FiveM -->
-    <div class="tool-container" id="tool1">
-        <div class="hero-section">
-            <h2 id="hero1Title">🚔 LCPDFR → FiveM Converter</h2>
-            <p id="hero1Text">Paste any LCPDFR.com vehicle link below</p>
-            
-            <div class="link-input-wrapper">
-                <input type="url" id="lcpdfrLink" placeholder="https://www.lcpdfr.com/downloads/gta5mods/..." />
-                <button onclick="processLCPDFRLink()">
-                    <span id="btn1Text">Start</span>
-                </button>
-            </div>
-
-            <div class="instructions-box" id="instructions1">
-                <h4 id="inst1Title">📥 Follow these steps:</h4>
-                <ol id="inst1List">
-                    <li>Download page opened in new tab → Download the mod</li>
-                    <li>Extract the downloaded ZIP file</li>
-                    <li>Drag the extracted files to the box below</li>
-                    <li>Click Convert → Get FiveM-ready resource!</li>
-                </ol>
-            </div>
-        </div>
-
-        <div class="form-group">
-            <label id="label1Vehicle">Vehicle Spawn Name:</label>
-            <input type="text" id="spawnName1" placeholder="police" />
-        </div>
-
-        <div class="drop-zone" id="dropZone1" onclick="document.getElementById('fileInput1').click()">
-            <input type="file" id="fileInput1" multiple accept=".ytd,.yft,.ytf,.meta,.xml" onchange="handleLCPDFRFiles(event)">
-            <div class="file-icon">🚔</div>
-            <div><strong id="drop1Text">Drag & drop vehicle files here</strong></div>
-            <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">Or click to browse</div>
-        </div>
-
-        <div class="file-list" id="fileList1" style="display: none;"></div>
-
-        <div class="progress-container" id="progress1">
-            <strong id="progress1Title">⏳ Converting...</strong>
-            <div class="progress-bar"><div id="progressFill1" class="progress-fill"></div></div>
-        </div>
-
-        <div class="success-box" id="success1">
-            <strong>✓ Conversion Complete!</strong>
-            <div id="stats1" style="margin-top: 10px;"></div>
-        </div>
-
-        <button class="btn-primary" id="convertBtn1" onclick="convertLCPDFR()" disabled>🔄 Convert to FiveM</button>
-    </div>
-
-    <!-- Tool 3: XML Fixer -->
-    <div class="tool-container" id="tool2">
-        <div class="info-box">
-            <h2>🔧 XML Fixer</h2>
-            <p>Automatically fixes unescaped ampersands (&) in XML files. Fast processing for large files!</p>
-        </div>
-        <div class="drop-zone" id="dropZone2" onclick="document.getElementById('fileInput2').click()">
-            <input type="file" id="fileInput2" accept=".xml,text/xml" onchange="handleXMLFix(event)">
-            <div class="file-icon">📁</div>
-            <div><strong>Drag & drop XML file here</strong></div>
-        </div>
-        <div class="progress-container" id="progress2">
-            <strong>⏳ Processing...</strong>
-            <div class="progress-bar"><div id="progressFill2" class="progress-fill"></div></div>
-        </div>
-        <div class="success-box" id="success2">
-            <strong>✓ Done!</strong>
-            <div id="stats2" style="margin-top: 10px;"></div>
-        </div>
-        <button class="btn-primary" id="downloadBtn2" onclick="downloadFixedXML()" disabled>📥 Download Fixed File</button>
-    </div>
-
-    <!-- Tool 4: Carvariations Generator -->
-    <div class="tool-container" id="tool3">
-        <div class="info-box">
-            <h2>🎨 Carvariations.meta Generator</h2>
-            <p>Generate carvariations.meta files for police vehicles with custom colors, sirens, and extras.</p>
-        </div>
-        <div class="form-group">
-            <label>Vehicle Model Name:</label>
-            <input type="text" id="modelName" placeholder="police2" />
-        </div>
-        <div class="form-group">
-            <label>Primary Colors (comma separated):</label>
-            <input type="text" id="primaryColors" placeholder="0,1,3,4" value="0,1,111" />
-        </div>
-        <div class="form-group">
-            <label>Secondary Colors (comma separated):</label>
-            <input type="text" id="secondaryColors" placeholder="0,1,3,4" value="0,1,111" />
-        </div>
-        <div class="form-group">
-            <label>Siren Setting:</label>
-            <select id="sirenSetting">
-                <option value="1">1 - Default</option>
-                <option value="2">2 - Fire Truck</option>
-                <option value="3">3 - Ambulance</option>
-                <option value="4">4 - Police</option>
-            </select>
-        </div>
-        <div class="success-box" id="success3">
-            <strong>✓ Generated!</strong>
-        </div>
-        <button class="btn-primary" onclick="generateCarvariations()">📝 Generate & Download</button>
-    </div>
-</div>
-
-<div class="footer">
-    <p>Free modding tools for the community • Made with ❤️</p>
-</div>
-
-<script>
-    let currentLang = 'en';
-    let currentTool = 0;
-    let isDarkMode = false;
-    let gta5Files = [];
-    let lcpdfrFiles = [];
-    let xmlFixedContent = '';
-    let xmlOriginalName = '';
-
-    function toggleTheme() {
-        isDarkMode = !isDarkMode;
-        document.body.classList.toggle('dark-mode');
-        document.getElementById('themeIcon').textContent = isDarkMode ? '☀️' : '🌙';
-    }
-
-    const translations = {
-        en: {
-            mainTitle: '🔧 Modding Toolkit',
-            mainSubtitle: 'Convert GTA5 & LCPDFR mods to FiveM resources',
-            tab0: '🚗 GTA5 → FiveM',
-            tab1: '🚔 LCPDFR → FiveM',
-            tab2: '🔧 XML Fixer',
-            tab3: '🎨 Carvariations Generator',
-            hero0Title: '🚗 GTA5-Mods → FiveM Converter',
-            hero0Text: 'Paste any GTA5-Mods.com vehicle link below',
-            btn0Text: 'Start',
-            inst0Title: '📥 Follow these steps:',
-            label0Vehicle: 'Vehicle Spawn Name:',
-            drop0Text: 'Drag & drop vehicle files here',
-            drop0Hint: 'Or click to browse',
-            hero1Title: '🚔 LCPDFR → FiveM Converter',
-            hero1Text: 'Paste any LCPDFR.com vehicle link below',
-            btn1Text: 'Start',
-            inst1Title: '📥 Follow these steps:',
-            label1Vehicle: 'Vehicle Spawn Name:',
-            drop1Text: 'Drag & drop vehicle files here'
-        },
-        bg: {
-            mainTitle: '🔧 Инструменти за Модиране',
-            mainSubtitle: 'Конвертирайте GTA5 & LCPDFR модове във FiveM ресурси',
-            tab0: '🚗 GTA5 → FiveM',
-            tab1: '🚔 LCPDFR → FiveM',
-            tab2: '🔧 XML Фиксер',
-            tab3: '🎨 Генератор Carvariations',
-            hero0Title: '🚗 GTA5-Mods → FiveM Конвертор',
-            hero0Text: 'Поставете линк от GTA5-Mods.com',
-            btn0Text: 'Старт',
-            inst0Title: '📥 Следвайте стъпките:',
-            label0Vehicle: 'Име за спаун:',
-            drop0Text: 'Плъзнете файлове тук',
-            drop0Hint: 'Или кликнете за избор',
-            hero1Title: '🚔 LCPDFR → FiveM Конвертор',
-            hero1Text: 'Поставете линк от LCPDFR.com',
-            btn1Text: 'Старт',
-            inst1Title: '📥 Следвайте стъпките:',
-            label1Vehicle: 'Име за спаун:',
-            drop1Text: 'Плъзнете файлове тук'
-        }
-    };
-
-    function toggleLanguage() {
-        currentLang = currentLang === 'en' ? 'bg' : 'en';
-        updateLanguage();
-    }
-
-    function updateLanguage() {
-        const t = translations[currentLang];
-        document.getElementById('langText').textContent = currentLang === 'en' ? 'BG' : 'EN';
-        
-        // Update all text elements
-        Object.keys(t).forEach(key => {
-            const el = document.getElementById(key);
-            if (el) {
-                el.textContent = t[key];
-            }
-        });
-    }
-
-    function switchTool(index) {
-        currentTool = index;
-        document.querySelectorAll('.tool-container').forEach((el, i) => {
-            el.classList.toggle('active', i === index);
-        });
-        document.querySelectorAll('.tab-btn').forEach((el, i) => {
-            el.classList.toggle('active', i === index);
-        });
-    }
-
-    function processGTA5Link() {
-        const link = document.getElementById('gta5Link').value.trim();
-        if (!link) {
-            alert('Please paste a GTA5-Mods.com link!');
-            return;
-        }
-
-        if (!link.includes('gta5-mods.com') && !link.includes('gta5mods.com')) {
-            alert('Please enter a valid GTA5-Mods.com link!');
-            return;
-        }
-
-        // Extract vehicle name
-        const urlParts = link.split('/');
-        let modName = urlParts[urlParts.length - 1] || 'vehicle';
-        modName = modName.replace(/[^a-z0-9]/gi, '').toLowerCase();
-        document.getElementById('spawnName0').value = modName;
-
-        // Show instructions
-        document.getElementById('instructions0').classList.add('active');
-
-        // Open download page
-        window.open(link, '_blank');
-    }
-
-    function processLCPDFRLink() {
-        const link = document.getElementById('lcpdfrLink').value.trim();
-        if (!link) {
-            alert('Please paste an LCPDFR.com link!');
-            return;
-        }
-
-        if (!link.includes('lcpdfr.com')) {
-            alert('Please enter a valid LCPDFR.com link!');
-            return;
-        }
-
-        const urlParts = link.split('/');
-        let modName = urlParts[urlParts.length - 1] || 'police';
-        modName = modName.replace(/[^a-z0-9]/gi, '').toLowerCase();
-        document.getElementById('spawnName1').value = modName;
-
-        document.getElementById('instructions1').classList.add('active');
-        window.open(link, '_blank');
-    }
-
-    function handleGTA5Files(event) {
-        gta5Files = Array.from(event.target.files);
-        if (gta5Files.length === 0) return;
-
-        const list = document.getElementById('fileList0');
-        list.style.display = 'block';
-        list.innerHTML = '<strong>📁 Uploaded Files:</strong><br>' + 
-            gta5Files.map(f => `<div class="file-item">📄 ${f.name}</div>`).join('');
-        
-        document.getElementById('convertBtn0').disabled = false;
-    }
-
-    function handleLCPDFRFiles(event) {
-        lcpdfrFiles = Array.from(event.target.files);
-        if (lcpdfrFiles.length === 0) return;
-
-        const list = document.getElementById('fileList1');
-        list.style.display = 'block';
-        list.innerHTML = '<strong>📁 Uploaded Files:</strong><br>' + 
-            lcpdfrFiles.map(f => `<div class="file-item">📄 ${f.name}</div>`).join('');
-        
-        document.getElementById('convertBtn1').disabled = false;
-    }
-
-    async function convertGTA5() {
-        const spawnName = document.getElementById('spawnName0').value.trim();
-        if (!spawnName) {
-            alert('Please enter a vehicle spawn name!');
-            return;
-        }
-
-        document.getElementById('progress0').style.display = 'block';
-        document.getElementById('success0').style.display = 'none';
-        document.getElementById('progressFill0').style.width = '50%';
-
-        try {
-            const zip = new JSZip();
-            const folder = zip.folder(spawnName);
-            
-            for (const file of gta5Files) {
-                const data = await file.arrayBuffer();
+        <div class="tool-container active" id="tool0">
+            <div class="hero-section">
+                <h2 id="hero0Title">🚗 GTA5-Mods → FiveM Converter</h2>
+                <p id="hero0Text">Paste any GTA5-Mods.com vehicle link below</p>
                 
-                if (file.name.endsWith('.meta') || file.name.endsWith('.xml')) {
-                    const text = await file.text();
-                    const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
-                    folder.file(file.name, fixed);
-                } else {
-                    folder.file(file.name, data);
+                <div class="link-input-wrapper">
+                    <input type="url" id="gta5Link" placeholder="https://www.gta5-mods.com/vehicles/..." />
+                    <button onclick="processGTA5Link()">
+                        <span id="btn0Text">Start</span>
+                    </button>
+                </div>
+
+                <div class="instructions-box" id="instructions0">
+                    <h4 id="inst0Title">📥 Follow these steps:</h4>
+                    <ol id="inst0List">
+                        <li>Download page opened in new tab → Download the mod</li>
+                        <li>Extract the downloaded ZIP file</li>
+                        <li>Drag the extracted files to the box below</li>
+                        <li>Click Convert → Get FiveM-ready resource!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="label0Vehicle">Vehicle Spawn Name:</label>
+                <input type="text" id="spawnName0" placeholder="police2" />
+            </div>
+
+            <div class="drop-zone" id="dropZone0" onclick="document.getElementById('fileInput0').click()">
+                <input type="file" id="fileInput0" multiple accept=".ytd,.yft,.ytf,.meta,.xml,.ydr,.ydd" onchange="handleGTA5Files(event)">
+                <div class="file-icon">📂</div>
+                <div><strong id="drop0Text">Drag & drop vehicle files here</strong></div>
+                <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;" id="drop0Hint">Or click to browse</div>
+            </div>
+
+            <div class="file-list" id="fileList0" style="display: none;"></div>
+
+            <div class="progress-container" id="progress0">
+                <strong id="progress0Title">⏳ Converting...</strong>
+                <div class="progress-bar"><div id="progressFill0" class="progress-fill"></div></div>
+            </div>
+
+            <div class="success-box" id="success0">
+                <strong>✓ Conversion Complete!</strong>
+                <div id="stats0" style="margin-top: 10px;"></div>
+            </div>
+
+            <button class="btn-primary" id="convertBtn0" onclick="convertGTA5()" disabled>🔄 Convert to FiveM</button>
+        </div>
+
+        <div class="tool-container" id="tool1">
+            <div class="hero-section">
+                <h2 id="hero1Title">🚔 LCPDFR → FiveM Converter</h2>
+                <p id="hero1Text">Paste any LCPDFR.com vehicle link below</p>
+                
+                <div class="link-input-wrapper">
+                    <input type="url" id="lcpdfrLink" placeholder="https://www.lcpdfr.com/downloads/gta5mods/..." />
+                    <button onclick="processLCPDFRLink()">
+                        <span id="btn1Text">Start</span>
+                    </button>
+                </div>
+
+                <div class="instructions-box" id="instructions1">
+                    <h4 id="inst1Title">📥 Follow these steps:</h4>
+                    <ol id="inst1List">
+                        <li>Download page opened in new tab → Download the mod</li>
+                        <li>Extract the downloaded ZIP file</li>
+                        <li>Drag the extracted files to the box below</li>
+                        <li>Click Convert → Get FiveM-ready resource!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label id="label1Vehicle">Vehicle Spawn Name:</label>
+                <input type="text" id="spawnName1" placeholder="police" />
+            </div>
+
+            <div class="drop-zone" id="dropZone1" onclick="document.getElementById('fileInput1').click()">
+                <input type="file" id="fileInput1" multiple accept=".ytd,.yft,.ytf,.meta,.xml" onchange="handleLCPDFRFiles(event)">
+                <div class="file-icon">🚔</div>
+                <div><strong id="drop1Text">Drag & drop vehicle files here</strong></div>
+                <div style="font-size: 0.9em; margin-top: 10px; opacity: 0.8;">Or click to browse</div>
+            </div>
+
+            <div class="file-list" id="fileList1" style="display: none;"></div>
+
+            <div class="progress-container" id="progress1">
+                <strong id="progress1Title">⏳ Converting...</strong>
+                <div class="progress-bar"><div id="progressFill1" class="progress-fill"></div></div>
+            </div>
+
+            <div class="success-box" id="success1">
+                <strong>✓ Conversion Complete!</strong>
+                <div id="stats1" style="margin-top: 10px;"></div>
+            </div>
+
+            <button class="btn-primary" id="convertBtn1" onclick="convertLCPDFR()" disabled>🔄 Convert to FiveM</button>
+        </div>
+
+        <div class="tool-container" id="tool2">
+            <div class="info-box">
+                <h2>🔧 XML Fixer</h2>
+                <p>Automatically fixes unescaped ampersands (&) in XML files. Fast processing for large files!</p>
+            </div>
+            <div class="drop-zone" id="dropZone2" onclick="document.getElementById('fileInput2').click()">
+                <input type="file" id="fileInput2" accept=".xml,text/xml" onchange="handleXMLFix(event)">
+                <div class="file-icon">📁</div>
+                <div><strong>Drag & drop XML file here</strong></div>
+            </div>
+            <div class="progress-container" id="progress2">
+                <strong>⏳ Processing...</strong>
+                <div class="progress-bar"><div id="progressFill2" class="progress-fill"></div></div>
+            </div>
+            <div class="success-box" id="success2">
+                <strong>✓ Done!</strong>
+                <div id="stats2" style="margin-top: 10px;"></div>
+            </div>
+            <button class="btn-primary" id="downloadBtn2" onclick="downloadFixedXML()" disabled>📥 Download Fixed File</button>
+        </div>
+
+        <div class="tool-container" id="tool3">
+            <div class="info-box">
+                <h2>🎨 Carvariations.meta Generator</h2>
+                <p>Generate carvariations.meta files for police vehicles with custom colors, sirens, and extras.</p>
+            </div>
+            <div class="form-group">
+                <label>Vehicle Model Name:</label>
+                <input type="text" id="modelName" placeholder="police2" />
+            </div>
+            <div class="form-group">
+                <label>Primary Colors (comma separated):</label>
+                <input type="text" id="primaryColors" placeholder="0,1,3,4" value="0,1,111" />
+            </div>
+            <div class="form-group">
+                <label>Secondary Colors (comma separated):</label>
+                <input type="text" id="secondaryColors" placeholder="0,1,3,4" value="0,1,111" />
+            </div>
+            <div class="form-group">
+                <label>Siren Setting:</label>
+                <select id="sirenSetting">
+                    <option value="1">1 - Default</option>
+                    <option value="2">2 - Fire Truck</option>
+                    <option value="3">3 - Ambulance</option>
+                    <option value="4">4 - Police</option>
+                </select>
+            </div>
+            <div class="success-box" id="success3">
+                <strong>✓ Generated!</strong>
+            </div>
+            <button class="btn-primary" onclick="generateCarvariations()">📝 Generate & Download</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Free modding tools for the community • Made with ❤️</p>
+    </div>
+
+    <script>
+        let currentLang = 'en';
+        let currentTool = 0;
+        let isDarkMode = false;
+        let gta5Files = [];
+        let lcpdfrFiles = [];
+        let xmlFixedContent = '';
+        let xmlOriginalName = '';
+
+        function toggleTheme() {
+            isDarkMode = !isDarkMode;
+            document.body.classList.toggle('dark-mode');
+            document.getElementById('themeIcon').textContent = isDarkMode ? '☀️' : '🌙';
+        }
+
+        const translations = {
+            en: {
+                mainTitle: '🔧 Modding Toolkit',
+                mainSubtitle: 'Convert GTA5 & LCPDFR mods to FiveM resources',
+                tab0: '🚗 GTA5 → FiveM',
+                tab1: '🚔 LCPDFR → FiveM',
+                tab2: '🔧 XML Fixer',
+                tab3: '🎨 Carvariations Generator',
+                hero0Title: '🚗 GTA5-Mods → FiveM Converter',
+                hero0Text: 'Paste any GTA5-Mods.com vehicle link below',
+                btn0Text: 'Start',
+                inst0Title: '📥 Follow these steps:',
+                label0Vehicle: 'Vehicle Spawn Name:',
+                drop0Text: 'Drag & drop vehicle files here',
+                drop0Hint: 'Or click to browse',
+                hero1Title: '🚔 LCPDFR → FiveM Converter',
+                hero1Text: 'Paste any LCPDFR.com vehicle link below',
+                btn1Text: 'Start',
+                inst1Title: '📥 Follow these steps:',
+                label1Vehicle: 'Vehicle Spawn Name:',
+                drop1Text: 'Drag & drop vehicle files here'
+            },
+            bg: {
+                mainTitle: '🔧 Инструменти за Модиране',
+                mainSubtitle: 'Конвертирайте GTA5 & LCPDFR модове във FiveM ресурси',
+                tab0: '🚗 GTA5 → FiveM',
+                tab1: '🚔 LCPDFR → FiveM',
+                tab2: '🔧 XML Фиксер',
+                tab3: '🎨 Генератор Carvariations',
+                hero0Title: '🚗 GTA5-Mods → FiveM Конвертор',
+                hero0Text: 'Поставете линк от GTA5-Mods.com',
+                btn0Text: 'Старт',
+                inst0Title: '📥 Следвайте стъпките:',
+                label0Vehicle: 'Име за спаун:',
+                drop0Text: 'Плъзнете файлове тук',
+                drop0Hint: 'Или кликнете за избор',
+                hero1Title: '🚔 LCPDFR → FiveM Конвертор',
+                hero1Text: 'Поставете линк от LCPDFR.com',
+                btn1Text: 'Старт',
+                inst1Title: '📥 Следвайте стъпките:',
+                label1Vehicle: 'Име за спаун:',
+                drop1Text: 'Плъзнете файлове тук'
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'bg' : 'en';
+            updateLanguage();
+        }
+
+        function updateLanguage() {
+            const t = translations[currentLang];
+            document.getElementById('langText').textContent = currentLang === 'en' ? 'BG' : 'EN';
+            
+            Object.keys(t).forEach(key => {
+                const el = document.getElementById(key);
+                if (el) {
+                    el.textContent = t[key];
                 }
+            });
+        }
+
+        function switchTool(index) {
+            currentTool = index;
+            document.querySelectorAll('.tool-container').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.tab-btn').forEach((el, i) => {
+                el.classList.toggle('active', i === index);
+            });
+        }
+
+        function processGTA5Link() {
+            const link = document.getElementById('gta5Link').value.trim();
+            if (!link) {
+                alert('Please paste a GTA5-Mods.com link!');
+                return;
             }
 
-            const fxmanifest = `fx_version 'cerulean'
-```
+            if (!link.includes('gta5-mods.com') && !link.includes('gta5mods.com')) {
+                alert('Please enter a valid GTA5-Mods.com link!');
+                return;
+            }
 
-game ‘gta5’
+            const urlParts = link.split('/');
+            let modName = urlParts[urlParts.length - 1] || 'vehicle';
+            modName = modName.replace(/[^a-z0-9]/gi, '').toLowerCase();
+            document.getElementById('spawnName0').value = modName;
 
-author ‘Converted via Modding Toolkit’
-description ‘${spawnName}’
-version ‘1.0.0’
+            document.getElementById('instructions0').classList.add('active');
+            window.open(link, '_blank');
+        }
+
+        function processLCPDFRLink() {
+            const link = document.getElementById('lcpdfrLink').value.trim();
+            if (!link) {
+                alert('Please paste an LCPDFR.com link!');
+                return;
+            }
+
+            if (!link.includes('lcpdfr.com')) {
+                alert('Please enter a valid LCPDFR.com link!');
+                return;
+            }
+
+            const urlParts = link.split('/');
+            let modName = urlParts[urlParts.length - 1] || 'police';
+            modName = modName.replace(/[^a-z0-9]/gi, '').toLowerCase();
+            document.getElementById('spawnName1').value = modName;
+
+            document.getElementById('instructions1').classList.add('active');
+            window.open(link, '_blank');
+        }
+
+        function handleGTA5Files(event) {
+            gta5Files = Array.from(event.target.files);
+            if (gta5Files.length === 0) return;
+
+            const list = document.getElementById('fileList0');
+            list.style.display = 'block';
+            list.innerHTML = '<strong>📁 Uploaded Files:</strong><br>' + 
+                gta5Files.map(f => `<div class="file-item">📄 ${f.name}</div>`).join('');
+            
+            document.getElementById('convertBtn0').disabled = false;
+        }
+
+        function handleLCPDFRFiles(event) {
+            lcpdfrFiles = Array.from(event.target.files);
+            if (lcpdfrFiles.length === 0) return;
+
+            const list = document.getElementById('fileList1');
+            list.style.display = 'block';
+            list.innerHTML = '<strong>📁 Uploaded Files:</strong><br>' + 
+                lcpdfrFiles.map(f => `<div class="file-item">📄 ${f.name}</div>`).join('');
+            
+            document.getElementById('convertBtn1').disabled = false;
+        }
+
+        async function convertGTA5() {
+            const spawnName = document.getElementById('spawnName0').value.trim();
+            if (!spawnName) {
+                alert('Please enter a vehicle spawn name!');
+                return;
+            }
+
+            document.getElementById('progress0').style.display = 'block';
+            document.getElementById('success0').style.display = 'none';
+            document.getElementById('progressFill0').style.width = '50%';
+
+            try {
+                const zip = new JSZip();
+                const folder = zip.folder(spawnName);
+                
+                for (const file of gta5Files) {
+                    const data = await file.arrayBuffer();
+                    
+                    if (file.name.endsWith('.meta') || file.name.endsWith('.xml')) {
+                        const text = await file.text();
+                        const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+                        folder.file(file.name, fixed);
+                    } else {
+                        folder.file(file.name, data);
+                    }
+                }
+
+                const fxmanifest = `fx_version 'cerulean'
+game 'gta5'
+
+author 'Converted via Modding Toolkit'
+description '${spawnName}'
+version '1.0.0'
 
 files {
-${gta5Files.filter(f => f.name.endsWith(’.meta’)).map(f => `    '${f.name}',`).join(’\n’)}
+${gta5Files.filter(f => f.name.endsWith('.meta')).map(f => `    '${f.name}',`).join('\n')}
 }
 
-${gta5Files.some(f => f.name.includes(‘carcols’)) ? “data_file ‘CARCOLS_FILE’ ‘carcols.meta’” : ‘’}
-${gta5Files.some(f => f.name.includes(‘carvariations’)) ? “data_file ‘VEHICLE_VARIATION_FILE’ ‘carvariations.meta’” : ‘’}
-${gta5Files.some(f => f.name.includes(‘handling’)) ? “data_file ‘HANDLING_FILE’ ‘handling.meta’” : ‘’}
-${gta5Files.some(f => f.name.includes(‘vehicles’)) ? “data_file ‘VEHICLE_LAYOUTS_FILE’ ‘vehiclelayouts.meta’” : ‘’}
+${gta5Files.some(f => f.name.includes('carcols')) ? "data_file 'CARCOLS_FILE' 'carcols.meta'" : ''}
+${gta5Files.some(f => f.name.includes('carvariations')) ? "data_file 'VEHICLE_VARIATION_FILE' 'carvariations.meta'" : ''}
+${gta5Files.some(f => f.name.includes('handling')) ? "data_file 'HANDLING_FILE' 'handling.meta'" : ''}
+${gta5Files.some(f => f.name.includes('vehicles')) ? "data_file 'VEHICLE_LAYOUTS_FILE' 'vehiclelayouts.meta'" : ''}
 
-client_script ‘vehicle_names.lua’
+client_script 'vehicle_names.lua'
 `;
-folder.file(‘fxmanifest.lua’, fxmanifest);
+                folder.file('fxmanifest.lua', fxmanifest);
 
-```
-            const vehicleNames = `Citizen.CreateThread(function()
-AddTextEntry('${spawnName.toUpperCase()}', '${spawnName.charAt(0).toUpperCase() + spawnName.slice(1)}')
-```
-
+                const vehicleNames = `Citizen.CreateThread(function()
+    AddTextEntry('${spawnName.toUpperCase()}', '${spawnName.charAt(0).toUpperCase() + spawnName.slice(1)}')
 end)
 `;
-folder.file(‘vehicle_names.lua’, vehicleNames);
+                folder.file('vehicle_names.lua', vehicleNames);
 
-```
-            document.getElementById('progressFill0').style.width = '100%';
+                document.getElementById('progressFill0').style.width = '100%';
 
-            const content = await zip.generateAsync({type: 'blob'});
-            const url = URL.createObjectURL(content);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${spawnName}_fivem.zip`;
-            a.click();
-            URL.revokeObjectURL(url);
+                const content = await zip.generateAsync({type: 'blob'});
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${spawnName}_fivem.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
 
-            document.getElementById('progress0').style.display = 'none';
-            document.getElementById('success0').style.display = 'block';
-            document.getElementById('stats0').textContent = `Successfully converted ${gta5Files.length} files!`;
-        } catch (error) {
-            alert('Error: ' + error.message);
-            document.getElementById('progress0').style.display = 'none';
-        }
-    }
-
-    async function convertLCPDFR() {
-        const spawnName = document.getElementById('spawnName1').value.trim();
-        if (!spawnName) {
-            alert('Please enter a vehicle spawn name!');
-            return;
+                document.getElementById('progress0').style.display = 'none';
+                document.getElementById('success0').style.display = 'block';
+                document.getElementById('stats0').textContent = `Successfully converted ${gta5Files.length} files!`;
+            } catch (error) {
+                alert('Error: ' + error.message);
+                document.getElementById('progress0').style.display = 'none';
+            }
         }
 
-        document.getElementById('progress1').style.display = 'block';
-        document.getElementById('success1').style.display = 'none';
-        document.getElementById('progressFill1').style.width = '50%';
-
-        try {
-            const zip = new JSZip();
-            const folder = zip.folder(spawnName);
-            
-            for (const file of lcpdfrFiles) {
-                const data = await file.arrayBuffer();
-                
-                if (file.name.endsWith('.meta') || file.name.endsWith('.xml')) {
-                    const text = await file.text();
-                    const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
-                    folder.file(file.name, fixed);
-                } else {
-                    folder.file(file.name, data);
-                }
+        async function convertLCPDFR() {
+            const spawnName = document.getElementById('spawnName1').value.trim();
+            if (!spawnName) {
+                alert('Please enter a vehicle spawn name!');
+                return;
             }
 
-            const fxmanifest = `fx_version 'cerulean'
-```
+            document.getElementById('progress1').style.display = 'block';
+            document.getElementById('success1').style.display = 'none';
+            document.getElementById('progressFill1').style.width = '50%';
 
-game ‘gta5’
+            try {
+                const zip = new JSZip();
+                const folder = zip.folder(spawnName);
+                
+                for (const file of lcpdfrFiles) {
+                    const data = await file.arrayBuffer();
+                    
+                    if (file.name.endsWith('.meta') || file.name.endsWith('.xml')) {
+                        const text = await file.text();
+                        const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+                        folder.file(file.name, fixed);
+                    } else {
+                        folder.file(file.name, data);
+                    }
+                }
 
-author ‘Converted from LCPDFR’
-description ‘${spawnName} - Police Vehicle’
-version ‘1.0.0’
+                const fxmanifest = `fx_version 'cerulean'
+game 'gta5'
+
+author 'Converted from LCPDFR'
+description '${spawnName} - Police Vehicle'
+version '1.0.0'
 
 files {
-${lcpdfrFiles.filter(f => f.name.endsWith(’.meta’)).map(f => `    '${f.name}',`).join(’\n’)}
+${lcpdfrFiles.filter(f => f.name.endsWith('.meta')).map(f => `    '${f.name}',`).join('\n')}
 }
 
-data_file ‘CARCOLS_FILE’ ‘carcols.meta’
-data_file ‘VEHICLE_VARIATION_FILE’ ‘carvariations.meta’
-data_file ‘HANDLING_FILE’ ‘handling.meta’
+data_file 'CARCOLS_FILE' 'carcols.meta'
+data_file 'VEHICLE_VARIATION_FILE' 'carvariations.meta'
+data_file 'HANDLING_FILE' 'handling.meta'
 
-client_script ‘vehicle_names.lua’
+client_script 'vehicle_names.lua'
 `;
-folder.file(‘fxmanifest.lua’, fxmanifest);
+                folder.file('fxmanifest.lua', fxmanifest);
 
-```
-            const vehicleNames = `Citizen.CreateThread(function()
-AddTextEntry('${spawnName.toUpperCase()}', '${spawnName.charAt(0).toUpperCase() + spawnName.slice(1)}')
-```
-
+                const vehicleNames = `Citizen.CreateThread(function()
+    AddTextEntry('${spawnName.toUpperCase()}', '${spawnName.charAt(0).toUpperCase() + spawnName.slice(1)}')
 end)
 `;
-folder.file(‘vehicle_names.lua’, vehicleNames);
+                folder.file('vehicle_names.lua', vehicleNames);
 
-```
-            document.getElementById('progressFill1').style.width = '100%';
+                document.getElementById('progressFill1').style.width = '100%';
 
-            const content = await zip.generateAsync({type: 'blob'});
-            const url = URL.createObjectURL(content);
+                const content = await zip.generateAsync({type: 'blob'});
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${spawnName}_fivem.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                document.getElementById('progress1').style.display = 'none';
+                document.getElementById('success1').style.display = 'block';
+                document.getElementById('stats1').textContent = `Successfully converted ${lcpdfrFiles.length} files!`;
+            } catch (error) {
+                alert('Error: ' + error.message);
+                document.getElementById('progress1').style.display = 'none';
+            }
+        }
+
+        async function handleXMLFix(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            xmlOriginalName = file.name;
+            document.getElementById('progress2').style.display = 'block';
+            document.getElementById('success2').style.display = 'none';
+
+            try {
+                const text = await file.text();
+                const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
+                const issuesFixed = (text.match(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g) || []).length;
+                
+                xmlFixedContent = fixed;
+                
+                document.getElementById('progress2').style.display = 'none';
+                document.getElementById('success2').style.display = 'block';
+                document.getElementById('stats2').textContent = `Fixed: ${issuesFixed} issues | Size: ${(file.size / 1024).toFixed(1)} KB`;
+                document.getElementById('downloadBtn2').disabled = false;
+            } catch (error) {
+                alert('Error: ' + error.message);
+                document.getElementById('progress2').style.display = 'none';
+            }
+        }
+
+        function downloadFixedXML() {
+            const blob = new Blob([xmlFixedContent], { type: 'text/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `${spawnName}_fivem.zip`;
+            a.download = xmlOriginalName;
             a.click();
             URL.revokeObjectURL(url);
-
-            document.getElementById('progress1').style.display = 'none';
-            document.getElementById('success1').style.display = 'block';
-            document.getElementById('stats1').textContent = `Successfully converted ${lcpdfrFiles.length} files!`;
-        } catch (error) {
-            alert('Error: ' + error.message);
-            document.getElementById('progress1').style.display = 'none';
-        }
-    }
-
-    async function handleXMLFix(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-
-        xmlOriginalName = file.name;
-        document.getElementById('progress2').style.display = 'block';
-        document.getElementById('success2').style.display = 'none';
-
-        try {
-            const text = await file.text();
-            const fixed = text.replace(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g, '&amp;');
-            const issuesFixed = (text.match(/&(?!amp;|lt;|gt;|quot;|apos;|#\d+;|#x[0-9a-fA-F]+;)/g) || []).length;
-            
-            xmlFixedContent = fixed;
-            
-            document.getElementById('progress2').style.display = 'none';
-            document.getElementById('success2').style.display = 'block';
-            document.getElementById('stats2').textContent = `Fixed: ${issuesFixed} issues | Size: ${(file.size / 1024).toFixed(1)} KB`;
-            document.getElementById('downloadBtn2').disabled = false;
-        } catch (error) {
-            alert('Error: ' + error.message);
-            document.getElementById('progress2').style.display = 'none';
-        }
-    }
-
-    function downloadFixedXML() {
-        const blob = new Blob([xmlFixedContent], { type: 'text/xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = xmlOriginalName;
-        a.click();
-        URL.revokeObjectURL(url);
-    }
-
-    function generateCarvariations() {
-        const modelName = document.getElementById('modelName').value.trim();
-        if (!modelName) {
-            alert('Please enter a vehicle model name!');
-            return;
         }
 
-        const primaryColors = document.getElementById('primaryColors').value.trim();
-        const secondaryColors = document.getElementById('secondaryColors').value.trim();
-        const sirenSetting = document.getElementById('sirenSetting').value;
+        function generateCarvariations() {
+            const modelName = document.getElementById('modelName').value.trim();
+            if (!modelName) {
+                alert('Please enter a vehicle model name!');
+                return;
+            }
 
-        const carvariations = `<?xml version="1.0" encoding="UTF-8"?>
-```
+            const primaryColors = document.getElementById('primaryColors').value.trim();
+            const secondaryColors = document.getElementById('secondaryColors').value.trim();
+            const sirenSetting = document.getElementById('sirenSetting').value;
 
+            const carvariations = `<?xml version="1.0" encoding="UTF-8"?>
 <CVehicleModelInfoVarGlobal>
   <VariationData>
     <Item>
@@ -976,39 +946,35 @@ ${primaryColors.split(',').map(c => `        <Item>
   </VariationData>
 </CVehicleModelInfoVarGlobal>`;
 
-```
-        const blob = new Blob([carvariations], { type: 'text/xml;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'carvariations.meta';
-        a.click();
-        URL.revokeObjectURL(url);
+            const blob = new Blob([carvariations], { type: 'text/xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'carvariations.meta';
+            a.click();
+            URL.revokeObjectURL(url);
 
-        document.getElementById('success3').style.display = 'block';
-        setTimeout(() => {
-            document.getElementById('success3').style.display = 'none';
-        }, 3000);
-    }
+            document.getElementById('success3').style.display = 'block';
+            setTimeout(() => {
+                document.getElementById('success3').style.display = 'none';
+            }, 3000);
+        }
 
-    // Drag and drop
-    ['dropZone0', 'dropZone1', 'dropZone2'].forEach(id => {
-        const zone = document.getElementById(id);
-        zone.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            zone.classList.add('dragover');
+        ['dropZone0', 'dropZone1', 'dropZone2'].forEach(id => {
+            const zone = document.getElementById(id);
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                const input = zone.querySelector('input[type="file"]');
+                input.files = e.dataTransfer.files;
+                input.dispatchEvent(new Event('change'));
+            });
         });
-        zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
-        zone.addEventListener('drop', (e) => {
-            e.preventDefault();
-            zone.classList.remove('dragover');
-            const input = zone.querySelector('input[type="file"]');
-            input.files = e.dataTransfer.files;
-            input.dispatchEvent(new Event('change'));
-        });
-    });
-</script>
-```
-
+    </script>
 </body>
 </html>
