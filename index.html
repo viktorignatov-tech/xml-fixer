@@ -382,6 +382,17 @@
         body.dark-mode #visualPreview {
             background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%) !important;
         }
+        body.dark-mode .info-box,
+        body.dark-mode #importBox {
+            background: #1a2332 !important;
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode #importBox h3 {
+            color: #e0e0e0 !important;
+        }
+        body.dark-mode #importBox p {
+            color: #b0b0b0 !important;
+        }
         .footer {
             text-align: center;
             color: white;
@@ -562,6 +573,12 @@
             <div class="info-box">
                 <h2>🎨 Carvariations.meta Generator</h2>
                 <p>Generate carvariations.meta files for police vehicles with custom colors, sirens, and extras.</p>
+            </div>
+            
+            <div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; border-radius: 8px; margin-bottom: 20px;" id="importBox">
+                <h3 style="margin-bottom: 10px; color: #333;">📥 Import Existing File (Optional)</h3>
+                <p style="margin-bottom: 10px; color: #666;">Upload your existing carvariations.meta to edit it</p>
+                <input type="file" id="importCarvariations" accept=".meta,.xml" onchange="importCarvariationsFile(event)" style="padding: 10px; border: 2px solid #2196F3; border-radius: 8px; width: 100%; background: white; cursor: pointer;">
             </div>
             
             <div class="form-group">
@@ -1230,6 +1247,52 @@ ${primaryColors.split(',').map(c => `        <Item>
         window.addEventListener('DOMContentLoaded', () => {
             updateCarvariationsPreview();
         });
+
+        async function importCarvariationsFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                const text = await file.text();
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(text, 'text/xml');
+
+                // Check for parsing errors
+                const parseError = xmlDoc.querySelector('parsererror');
+                if (parseError) {
+                    alert('Error parsing XML file. Make sure it\'s a valid carvariations.meta file.');
+                    return;
+                }
+
+                // Extract model name
+                const modelNameNode = xmlDoc.querySelector('modelName');
+                const modelName = modelNameNode ? modelNameNode.textContent : '';
+
+                // Extract primary colors
+                const colorsNode = xmlDoc.querySelector('colors');
+                const colorIndices = colorsNode ? Array.from(colorsNode.querySelectorAll('Item indices')) : [];
+                const primaryColors = colorIndices.map(node => node.textContent.trim()).join(',');
+
+                // Extract siren setting
+                const sirenNode = xmlDoc.querySelector('sirenSettings Item');
+                const sirenSetting = sirenNode ? sirenNode.getAttribute('value') : '1';
+
+                // Fill the form
+                document.getElementById('modelName').value = modelName;
+                document.getElementById('primaryColors').value = primaryColors || '0,1,111';
+                document.getElementById('sirenSetting').value = sirenSetting;
+
+                // Update preview
+                updateCarvariationsPreview();
+
+                // Show success message
+                alert(`✓ Successfully imported!\n\nVehicle: ${modelName}\nColors: ${primaryColors}\nSiren: ${sirenSetting}`);
+
+            } catch (error) {
+                alert('Error reading file: ' + error.message);
+                console.error('Import error:', error);
+            }
+        }
     </script>
 </body>
 </html>
