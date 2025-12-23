@@ -682,8 +682,20 @@
             
             <div class="success-box" id="success3">
                 <strong>✓ Generated!</strong>
+                <div style="margin-top: 10px;">
+                    <strong>📦 Downloaded ZIP contains:</strong><br>
+                    • carvariations.meta (vehicle colors)<br>
+                    • carcols.meta (light pattern)<br><br>
+                    <strong>📥 Installation:</strong><br>
+                    1. Extract both files to your vehicle resource folder<br>
+                    2. Add to fxmanifest.lua:<br>
+                    <code style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px; display: block; margin-top: 5px;">
+                    data_file 'CARCOLS_FILE' 'carcols.meta'<br>
+                    data_file 'VEHICLE_VARIATION_FILE' 'carvariations.meta'
+                    </code>
+                </div>
             </div>
-            <button class="btn-primary" onclick="generateCarvariations()">📝 Generate & Download</button>
+            <button class="btn-primary" onclick="generateCarvariations()">📝 Generate & Download Files (ZIP)</button>
         </div>
     </div>
 
@@ -1106,7 +1118,7 @@ end)
             updateCarvariationsPreview();
         }
 
-        function generateCarvariations() {
+        async function generateCarvariations() {
             const modelName = document.getElementById('modelName').value.trim();
             if (!modelName) {
                 alert('Please enter a vehicle model name!');
@@ -1117,13 +1129,23 @@ end)
             const secondaryColors = document.getElementById('secondaryColors').value.trim();
             const sirenSetting = document.getElementById('sirenSetting').value;
 
+            // Create ZIP with both files
+            const zip = new JSZip();
+            
+            // Generate carvariations.meta
             const carvariations = buildCarvariationsXML(modelName, primaryColors, secondaryColors, sirenSetting);
+            zip.file('carvariations.meta', carvariations);
+            
+            // Generate carcols.meta with actual light pattern
+            const carcols = buildCarcolsXML(modelName);
+            zip.file('carcols.meta', carcols);
 
-            const blob = new Blob([carvariations], { type: 'text/xml;charset=utf-8' });
-            const url = URL.createObjectURL(blob);
+            // Download as ZIP
+            const content = await zip.generateAsync({type: 'blob'});
+            const url = URL.createObjectURL(content);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'carvariations.meta';
+            a.download = `${modelName}_lights.zip`;
             a.click();
             URL.revokeObjectURL(url);
 
@@ -1134,12 +1156,6 @@ end)
         }
 
         function buildCarvariationsXML(modelName, primaryColors, secondaryColors, sirenSetting) {
-            // Generate light pattern data
-            const patternData = lightPattern.map((row, rowIndex) => {
-                const rowData = row.map((colorIndex, colIndex) => COLOR_NAMES[colorIndex]).join(',');
-                return `Row${rowIndex + 1}: ${rowData}`;
-            }).join('\n        ');
-
             return `<?xml version="1.0" encoding="UTF-8"?>
 <CVehicleModelInfoVarGlobal>
   <VariationData>
@@ -1163,17 +1179,78 @@ ${primaryColors.split(',').map(c => `        <Item>
         </Probabilities>
       </plateProbabilities>
       <lightSettings>
-        <Item value="${sirenSetting}" />
+        <Item value="1" />
       </lightSettings>
       <sirenSettings>
-        <Item value="${sirenSetting}" />
+        <Item value="1" />
       </sirenSettings>
-      <!-- Custom Light Pattern Data (for reference) -->
-      <!-- 
-        ${patternData}
-      -->
     </Item>
   </VariationData>
+</CVehicleModelInfoVarGlobal>`;
+        }
+
+        function buildCarcolsXML(modelName) {
+            // Convert light pattern grid to actual siren positions
+            const sirens = [];
+            let sirenId = 1;
+            
+            // Process each light in the grid
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const colorIndex = lightPattern[row][col];
+                    if (colorIndex === 0) continue; // Skip "off" lights
+                    
+                    // Calculate position on lightbar (distributed across vehicle roof)
+                    const xPos = (col - COLS/2) * 0.15; // Spread across width
+                    const yPos = 0.8 + (row * 0.05); // Front to back
+                    const zPos = 0.7; // Height (on roof)
+                    
+                    // Get color values
+                    let colorR, colorG, colorB;
+                    switch(colorIndex) {
+                        case 1: colorR = 255; colorG = 0; colorB = 0; break; // Red
+                        case 2: colorR = 0; colorG = 100; colorB = 255; break; // Blue
+                        case 3: colorR = 255; colorG = 255; colorB = 255; break; // White
+                        case 4: colorR = 255; colorG = 170; colorB = 0; break; // Amber
+                    }
+                    
+                    sirens.push(`    <Item>
+      <id value="${sirenId}" />
+      <position x="${xPos.toFixed(3)}" y="${yPos.toFixed(3)}" z="${zPos.toFixed(3)}" />
+      <color r="${colorR}" g="${colorG}" b="${colorB}" />
+      <intensity value="10.0" />
+      <lightGroup value="0" />
+      <rotate value="true" />
+      <scale value="true" />
+      <scaleFactor value="1.0" />
+      <flash value="true" />
+      <light value="true" />
+      <spotLight value="false" />
+      <castShadows value="false" />
+    </Item>`);
+                    
+                    sirenId++;
+                }
+            }
+            
+            return `<?xml version="1.0" encoding="UTF-8"?>
+<CVehicleModelInfoVarGlobal>
+  <Sirens>
+    <Item>
+      <id value="1" />
+      <name>${modelName}_siren</name>
+      <timeMultiplier value="1.0" />
+      <lightFalloffMax value="30.0" />
+      <lightFalloffExponent value="8.0" />
+      <lightInnerConeAngle value="45.0" />
+      <lightOuterConeAngle value="90.0" />
+      <lightOffset value="0.0" />
+      <textureName />
+      <sequencer>
+${sirens.join('\n')}
+      </sequencer>
+    </Item>
+  </Sirens>
 </CVehicleModelInfoVarGlobal>`;
         }
 
