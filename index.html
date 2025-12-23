@@ -445,7 +445,7 @@
             <button class="tab-btn active" onclick="switchTool(0)" id="tab0">🚗 GTA5 → FiveM</button>
             <button class="tab-btn" onclick="switchTool(1)" id="tab1">🚔 LCPDFR → FiveM</button>
             <button class="tab-btn" onclick="switchTool(2)" id="tab2">🔧 XML Fixer</button>
-            <button class="tab-btn" onclick="switchTool(3)" id="tab3">🎨 Carvariations Generator</button>
+            <button class="tab-btn" onclick="switchTool(3)" id="tab3">🎨 Light Pattern Injector</button>
         </div>
 
         <div class="tool-container active" id="tool0">
@@ -576,9 +576,20 @@
             </div>
             
             <div style="background: #e3f2fd; border-left: 4px solid #2196F3; padding: 15px; border-radius: 8px; margin-bottom: 20px;" id="importBox">
-                <h3 style="margin-bottom: 10px; color: #333;">📥 Import Existing File (Optional)</h3>
-                <p style="margin-bottom: 10px; color: #666;">Upload your existing carvariations.meta to edit it</p>
-                <input type="file" id="importCarvariations" accept=".meta,.xml" onchange="importCarvariationsFile(event)" style="padding: 10px; border: 2px solid #2196F3; border-radius: 8px; width: 100%; background: white; cursor: pointer;">
+                <h3 style="margin-bottom: 15px; color: #333;">📥 Upload Your Vehicle Files (Required)</h3>
+                <p style="margin-bottom: 15px; color: #666;">Upload your existing carcols.meta and carvariations.meta files. We'll inject your custom light pattern and return fixed files!</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">1. Upload carcols.meta:</label>
+                    <input type="file" id="uploadCarcols" accept=".meta,.xml" onchange="handleCarcolsUpload(event)" style="padding: 10px; border: 2px solid #2196F3; border-radius: 8px; width: 100%; background: white; cursor: pointer;">
+                    <div id="carcolsStatus" style="margin-top: 8px; font-size: 0.9em;"></div>
+                </div>
+                
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 8px; color: #333;">2. Upload carvariations.meta:</label>
+                    <input type="file" id="uploadCarvariations" accept=".meta,.xml" onchange="handleCarvariationsUpload(event)" style="padding: 10px; border: 2px solid #2196F3; border-radius: 8px; width: 100%; background: white; cursor: pointer;">
+                    <div id="carvariationsStatus" style="margin-top: 8px; font-size: 0.9em;"></div>
+                </div>
             </div>
             
             <div class="form-group">
@@ -607,7 +618,16 @@
             </div>
             
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 25px; border-radius: 12px; margin: 20px 0; color: white;" id="visualPreview">
-                <h3 style="margin-bottom: 15px;">💡 Lightbar Pattern Editor:</h3>
+                <div style="background: rgba(255,200,0,0.15); padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 2px solid rgba(255,200,0,0.5);">
+                    <strong>ℹ️ How it works:</strong><br>
+                    <span style="font-size: 0.95em;">
+                    1️⃣ Upload your EXISTING carcols.meta and carvariations.meta files above<br>
+                    2️⃣ Design your custom light pattern below by clicking the lights<br>
+                    3️⃣ Click "Generate" to download FIXED files with your pattern injected<br>
+                    4️⃣ Replace your old files with the new ones - lights will work in-game! 🚨
+                    </span>
+                </div>
+                <h3 style="margin-bottom: 15px;">💡 Lightbar Pattern Designer:</h3>
                 <div style="background: rgba(255,255,255,0.15); padding: 20px; border-radius: 8px; backdrop-filter: blur(10px);">
                     
                     <!-- Light Pattern Editor -->
@@ -676,26 +696,24 @@
             </div>
             
             <div style="background: #f8f9ff; padding: 15px; border-radius: 8px; margin: 20px 0; border: 2px solid #e0e0e0;" id="previewBox">
-                <h3 style="margin-bottom: 10px; color: #333;" id="previewTitle">📄 XML Preview:</h3>
-                <pre id="carvariationsPreview" style="background: white; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.85em; line-height: 1.4; max-height: 300px; overflow-y: auto; border: 1px solid #ddd;"><code>&lt;!-- Enter values above to see preview --&gt;</code></pre>
+                <h3 style="margin-bottom: 10px; color: #333;" id="previewTitle">📄 Injection Preview:</h3>
+                <pre id="carvariationsPreview" style="background: white; padding: 15px; border-radius: 8px; overflow-x: auto; font-size: 0.85em; line-height: 1.4; max-height: 300px; overflow-y: auto; border: 1px solid #ddd;"><code>&lt;!-- Upload files above to see what will be injected --&gt;</code></pre>
             </div>
             
             <div class="success-box" id="success3">
-                <strong>✓ Generated!</strong>
+                <strong>✓ Files Generated Successfully!</strong>
                 <div style="margin-top: 10px;">
-                    <strong>📦 Downloaded ZIP contains:</strong><br>
-                    • carvariations.meta (vehicle colors)<br>
-                    • carcols.meta (light pattern)<br><br>
+                    <strong>📦 Downloaded ZIP contains your MODIFIED files:</strong><br>
+                    • carcols.meta (with your custom light pattern injected)<br>
+                    • carvariations.meta (updated)<br><br>
                     <strong>📥 Installation:</strong><br>
-                    1. Extract both files to your vehicle resource folder<br>
-                    2. Add to fxmanifest.lua:<br>
-                    <code style="background: rgba(0,0,0,0.2); padding: 5px; border-radius: 4px; display: block; margin-top: 5px;">
-                    data_file 'CARCOLS_FILE' 'carcols.meta'<br>
-                    data_file 'VEHICLE_VARIATION_FILE' 'carvariations.meta'
-                    </code>
+                    1. Extract both files<br>
+                    2. REPLACE the old files in your vehicle folder with these new ones<br>
+                    3. Restart your FiveM server/resource<br>
+                    4. Your custom lights will now work in-game! 🚨
                 </div>
             </div>
-            <button class="btn-primary" onclick="generateCarvariations()">📝 Generate & Download Files (ZIP)</button>
+            <button class="btn-primary" onclick="generateCarvariations()" disabled style="opacity: 0.5;">📝 Generate Fixed Files (Upload Both Files First)</button>
         </div>
     </div>
 
@@ -716,6 +734,12 @@
         const COLS = 8;
         const LIGHT_COLORS = ['#333333', '#ff0000', '#0066ff', '#ffffff', '#ffaa00'];
         const COLOR_NAMES = ['off', 'red', 'blue', 'white', 'amber'];
+        
+        // Store uploaded files
+        let uploadedCarcols = null;
+        let uploadedCarvariations = null;
+        let carcolsContent = '';
+        let carvariationsContent = '';
 
         function toggleTheme() {
             isDarkMode = !isDarkMode;
@@ -730,7 +754,7 @@
                 tab0: '🚗 GTA5 → FiveM',
                 tab1: '🚔 LCPDFR → FiveM',
                 tab2: '🔧 XML Fixer',
-                tab3: '🎨 Carvariations Generator',
+                tab3: '🎨 Light Pattern Injector',
                 hero0Title: '🚗 GTA5-Mods → FiveM Converter',
                 hero0Text: 'Paste any GTA5-Mods.com vehicle link below',
                 btn0Text: 'Start',
@@ -751,7 +775,7 @@
                 tab0: '🚗 GTA5 → FiveM',
                 tab1: '🚔 LCPDFR → FiveM',
                 tab2: '🔧 XML Фиксер',
-                tab3: '🎨 Генератор Carvariations',
+                tab3: '🎨 Инжектор на Светлини',
                 hero0Title: '🚗 GTA5-Mods → FiveM Конвертор',
                 hero0Text: 'Поставете линк от GTA5-Mods.com',
                 btn0Text: 'Старт',
@@ -1119,40 +1143,157 @@ end)
         }
 
         async function generateCarvariations() {
+            if (!uploadedCarcols || !uploadedCarvariations) {
+                alert('⚠️ Please upload both carcols.meta and carvariations.meta files first!');
+                return;
+            }
+
             const modelName = document.getElementById('modelName').value.trim();
             if (!modelName) {
                 alert('Please enter a vehicle model name!');
                 return;
             }
 
-            const primaryColors = document.getElementById('primaryColors').value.trim();
-            const secondaryColors = document.getElementById('secondaryColors').value.trim();
-            const sirenSetting = document.getElementById('sirenSetting').value;
+            try {
+                // Create ZIP with modified files
+                const zip = new JSZip();
+                
+                // Inject light pattern into carcols.meta
+                const modifiedCarcols = injectLightPatternIntoCarcols(carcolsContent, modelName);
+                zip.file('carcols.meta', modifiedCarcols);
+                
+                // Keep carvariations as is (or update model name if changed)
+                const modifiedCarvariations = updateCarvariationsModelName(carvariationsContent, modelName);
+                zip.file('carvariations.meta', modifiedCarvariations);
 
-            // Create ZIP with both files
-            const zip = new JSZip();
+                // Download as ZIP
+                const content = await zip.generateAsync({type: 'blob'});
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${modelName}_fixed_lights.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+
+                document.getElementById('success3').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('success3').style.display = 'none';
+                }, 10000);
+            } catch (error) {
+                alert('Error generating files: ' + error.message);
+                console.error('Generation error:', error);
+            }
+        }
+
+        function injectLightPatternIntoCarcols(xmlContent, modelName) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
             
-            // Generate carvariations.meta
-            const carvariations = buildCarvariationsXML(modelName, primaryColors, secondaryColors, sirenSetting);
-            zip.file('carvariations.meta', carvariations);
+            // Find or create Sirens section
+            let sirensNode = xmlDoc.querySelector('Sirens');
+            if (!sirensNode) {
+                const root = xmlDoc.documentElement;
+                sirensNode = xmlDoc.createElement('Sirens');
+                root.appendChild(sirensNode);
+            }
             
-            // Generate carcols.meta with actual light pattern
-            const carcols = buildCarcolsXML(modelName);
-            zip.file('carcols.meta', carcols);
+            // Generate siren items from light pattern
+            const sirenItems = [];
+            let sirenId = 1;
+            
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const colorIndex = lightPattern[row][col];
+                    if (colorIndex === 0) continue;
+                    
+                    const xPos = (col - COLS/2) * 0.15;
+                    const yPos = 0.8 + (row * 0.05);
+                    const zPos = 0.7;
+                    
+                    let colorR, colorG, colorB;
+                    switch(colorIndex) {
+                        case 1: colorR = 255; colorG = 0; colorB = 0; break;
+                        case 2: colorR = 0; colorG = 100; colorB = 255; break;
+                        case 3: colorR = 255; colorG = 255; colorB = 255; break;
+                        case 4: colorR = 255; colorG = 170; colorB = 0; break;
+                    }
+                    
+                    sirenItems.push({
+                        id: sirenId++,
+                        x: xPos.toFixed(3),
+                        y: yPos.toFixed(3),
+                        z: zPos.toFixed(3),
+                        r: colorR,
+                        g: colorG,
+                        b: colorB
+                    });
+                }
+            }
+            
+            // Build siren XML
+            const sirenXML = `
+    <Item>
+      <id value="1" />
+      <n>${modelName}_siren</n>
+      <timeMultiplier value="1.0" />
+      <lightFalloffMax value="30.0" />
+      <lightFalloffExponent value="8.0" />
+      <lightInnerConeAngle value="45.0" />
+      <lightOuterConeAngle value="90.0" />
+      <lightOffset value="0.0" />
+      <textureName />
+      <sequencer>
+${sirenItems.map(s => `        <Item>
+          <id value="${s.id}" />
+          <position x="${s.x}" y="${s.y}" z="${s.z}" />
+          <color r="${s.r}" g="${s.g}" b="${s.b}" />
+          <intensity value="10.0" />
+          <lightGroup value="0" />
+          <rotate value="true" />
+          <scale value="true" />
+          <scaleFactor value="1.0" />
+          <flash value="true" />
+          <light value="true" />
+          <spotLight value="false" />
+          <castShadows value="false" />
+        </Item>`).join('\n')}
+      </sequencer>
+    </Item>`;
+            
+            // Find existing siren item for this vehicle or add new
+            const existingItem = Array.from(sirensNode.querySelectorAll('Item')).find(item => {
+                const n = item.querySelector('n');
+                return n && (n.textContent === `${modelName}_siren` || n.textContent.includes(modelName));
+            });
+            
+            if (existingItem) {
+                // Replace existing
+                const tempDiv = new DOMParser().parseFromString(`<root>${sirenXML}</root>`, 'text/xml');
+                const newItem = tempDiv.querySelector('Item');
+                existingItem.parentNode.replaceChild(xmlDoc.importNode(newItem, true), existingItem);
+            } else {
+                // Add new
+                const tempDiv = new DOMParser().parseFromString(`<root>${sirenXML}</root>`, 'text/xml');
+                const newItem = tempDiv.querySelector('Item');
+                sirensNode.appendChild(xmlDoc.importNode(newItem, true));
+            }
+            
+            // Serialize back to string
+            const serializer = new XMLSerializer();
+            return serializer.serializeToString(xmlDoc);
+        }
 
-            // Download as ZIP
-            const content = await zip.generateAsync({type: 'blob'});
-            const url = URL.createObjectURL(content);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `${modelName}_lights.zip`;
-            a.click();
-            URL.revokeObjectURL(url);
-
-            document.getElementById('success3').style.display = 'block';
-            setTimeout(() => {
-                document.getElementById('success3').style.display = 'none';
-            }, 3000);
+        function updateCarvariationsModelName(xmlContent, modelName) {
+            const parser = new DOMParser();
+            const xmlDoc = parser.parseFromString(xmlContent, 'text/xml');
+            
+            const modelNameNode = xmlDoc.querySelector('modelName');
+            if (modelNameNode) {
+                modelNameNode.textContent = modelName;
+            }
+            
+            const serializer = new XMLSerializer();
+            return serializer.serializeToString(xmlDoc);
         }
 
         function buildCarvariationsXML(modelName, primaryColors, secondaryColors, sirenSetting) {
@@ -1337,15 +1478,18 @@ ${sirens.join('\n')}
             
             secondaryDiv.innerHTML += '</div></div>';
 
-            // XML preview
-            if (!modelName && !primaryColors) {
-                document.getElementById('carvariationsPreview').innerHTML = '<code>&lt;!-- Enter values above to see preview --&gt;</code>';
+            // XML preview - show what will be injected
+            if (!modelName) {
+                document.getElementById('carvariationsPreview').innerHTML = '<code>&lt;!-- Upload files and enter vehicle name to see preview --&gt;</code>';
                 return;
             }
 
-            const xml = buildCarvariationsXML(modelName, primaryColors, secondaryColors, sirenSetting);
-            const escaped = xml.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            document.getElementById('carvariationsPreview').innerHTML = `<code>${escaped}</code>`;
+            // Show what will be injected into carcols
+            const previewText = uploadedCarcols 
+                ? `Your uploaded carcols.meta will be modified to include ${activeLights} custom lights in this pattern.\n\nLight positions will be injected into the <Sirens> section.`
+                : 'Upload carcols.meta to see preview';
+            
+            document.getElementById('carvariationsPreview').innerHTML = `<code>${previewText}</code>`;
         }
 
         ['dropZone0', 'dropZone1', 'dropZone2'].forEach(id => {
@@ -1368,51 +1512,98 @@ ${sirens.join('\n')}
         window.addEventListener('DOMContentLoaded', () => {
             initializeLightGrid();
             updateCarvariationsPreview();
+            checkReadyToGenerate(); // Initialize button state
         });
 
-        async function importCarvariationsFile(event) {
+        async function handleCarcolsUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
 
             try {
-                const text = await file.text();
+                carcolsContent = await file.text();
+                uploadedCarcols = file;
+                
                 const parser = new DOMParser();
-                const xmlDoc = parser.parseFromString(text, 'text/xml');
-
+                const xmlDoc = parser.parseFromString(carcolsContent, 'text/xml');
+                
                 // Check for parsing errors
                 const parseError = xmlDoc.querySelector('parsererror');
                 if (parseError) {
-                    alert('Error parsing XML file. Make sure it\'s a valid carvariations.meta file.');
+                    document.getElementById('carcolsStatus').innerHTML = '❌ <span style="color: #d32f2f;">Invalid XML file</span>';
+                    uploadedCarcols = null;
                     return;
                 }
-
-                // Extract model name
-                const modelNameNode = xmlDoc.querySelector('modelName');
-                const modelName = modelNameNode ? modelNameNode.textContent : '';
-
-                // Extract primary colors
-                const colorsNode = xmlDoc.querySelector('colors');
-                const colorIndices = colorsNode ? Array.from(colorsNode.querySelectorAll('Item indices')) : [];
-                const primaryColors = colorIndices.map(node => node.textContent.trim()).join(',');
-
-                // Extract siren setting
-                const sirenNode = xmlDoc.querySelector('sirenSettings Item');
-                const sirenSetting = sirenNode ? sirenNode.getAttribute('value') : '1';
-
-                // Fill the form
-                document.getElementById('modelName').value = modelName;
-                document.getElementById('primaryColors').value = primaryColors || '0,1,111';
-                document.getElementById('sirenSetting').value = sirenSetting;
-
-                // Update preview
-                updateCarvariationsPreview();
-
-                // Show success message
-                alert(`✓ Successfully imported!\n\nVehicle: ${modelName}\nColors: ${primaryColors}\nSiren: ${sirenSetting}`);
-
+                
+                // Try to extract vehicle name
+                const sirenItem = xmlDoc.querySelector('Sirens Item');
+                if (sirenItem) {
+                    const nameNode = sirenItem.querySelector('n');
+                    if (nameNode && !document.getElementById('modelName').value) {
+                        const vehicleName = nameNode.textContent.replace('_siren', '');
+                        document.getElementById('modelName').value = vehicleName;
+                    }
+                }
+                
+                document.getElementById('carcolsStatus').innerHTML = '✅ <span style="color: #388e3c;">File loaded successfully!</span>';
+                checkReadyToGenerate();
             } catch (error) {
-                alert('Error reading file: ' + error.message);
-                console.error('Import error:', error);
+                document.getElementById('carcolsStatus').innerHTML = '❌ <span style="color: #d32f2f;">Error: ' + error.message + '</span>';
+                uploadedCarcols = null;
+            }
+        }
+
+        async function handleCarvariationsUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            try {
+                carvariationsContent = await file.text();
+                uploadedCarvariations = file;
+                
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(carvariationsContent, 'text/xml');
+                
+                // Check for parsing errors
+                const parseError = xmlDoc.querySelector('parsererror');
+                if (parseError) {
+                    document.getElementById('carvariationsStatus').innerHTML = '❌ <span style="color: #d32f2f;">Invalid XML file</span>';
+                    uploadedCarvariations = null;
+                    return;
+                }
+                
+                // Extract vehicle data
+                const modelNameNode = xmlDoc.querySelector('modelName');
+                if (modelNameNode && !document.getElementById('modelName').value) {
+                    document.getElementById('modelName').value = modelNameNode.textContent;
+                }
+                
+                // Extract colors
+                const colorsNode = xmlDoc.querySelector('colors');
+                if (colorsNode) {
+                    const colorIndices = Array.from(colorsNode.querySelectorAll('Item indices'));
+                    const colors = colorIndices.map(node => node.textContent.trim()).join(',');
+                    if (colors && !document.getElementById('primaryColors').value) {
+                        document.getElementById('primaryColors').value = colors;
+                    }
+                }
+                
+                document.getElementById('carvariationsStatus').innerHTML = '✅ <span style="color: #388e3c;">File loaded successfully!</span>';
+                updateCarvariationsPreview();
+                checkReadyToGenerate();
+            } catch (error) {
+                document.getElementById('carvariationsStatus').innerHTML = '❌ <span style="color: #d32f2f;">Error: ' + error.message + '</span>';
+                uploadedCarvariations = null;
+            }
+        }
+
+        function checkReadyToGenerate() {
+            const generateBtn = document.querySelector('#tool3 .btn-primary');
+            if (uploadedCarcols && uploadedCarvariations) {
+                generateBtn.disabled = false;
+                generateBtn.style.opacity = '1';
+            } else {
+                generateBtn.disabled = true;
+                generateBtn.style.opacity = '0.5';
             }
         }
     </script>
